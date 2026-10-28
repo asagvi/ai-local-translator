@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="ui.css">
+  <script src="theme.js"></script>
+  <style>
+  @layer pagina {
+    body { width: 340px; background: var(--superficie); }
+    .popup__cabecera { display: flex; align-items: center; gap: 10px; padding: 12px 12px 12px 14px; }
+    .popup__cabecera h1 { font-size: 1.05rem; margin-right: auto; }
+    .popup__ajustes { all: unset; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; color: var(--suave); cursor: pointer; }
+    .popup__ajustes:hover { background: var(--papel); color: var(--tinta); }
+    .popup__ajustes:focus-visible { outline: 2px solid var(--foco); }
+    .popup__cuerpo { padding: 4px 14px 16px; display: grid; gap: 14px; }
+    .popup__controles { display: grid; gap: 14px; }
+    .popup__accion { width: 100%; padding: 12px; font-size: 1rem; }
+    .popup__avance { display: grid; gap: 6px; min-height: 20px; }
+    .popup__descarga { display: grid; gap: 8px; justify-items: start; padding: 10px 12px; background: var(--papel); border-radius: 10px; }
+    .popup__descarga progress { width: 100%; }
+    .popup__contexto { padding: 10px 12px; background: var(--papel); border-radius: 10px; font-size: 0.85rem; display: grid; gap: 4px; }
+    .popup__pie { padding: 10px 14px; border-top: 1px solid var(--linea); background: var(--papel); font-size: 0.82rem; color: var(--suave); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .popup__enlace { all: unset; color: var(--acento); font-weight: 650; cursor: pointer; }
+    .popup__enlace:hover { text-decoration: underline; text-underline-offset: 2px; }
+    .popup__enlace:focus-visible { outline: 2px solid var(--foco); }
+    kbd { font-family: var(--mono); font-size: 0.85em; border: 1px solid var(--linea-fuerte); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; background: var(--superficie); }
+
+    /* Par de idiomas: de qué idioma a cuál */
+    .par { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 8px; padding: 6px; background: var(--banda); border-radius: var(--radio); color: var(--banda-texto); }
+    .par__origen { padding: 8px 10px; color: var(--banda-suave); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .par__flecha { color: var(--banda-suave); }
+    .par__destino { padding: 8px 10px; border: 0; border-radius: 8px; background: rgba(255, 255, 255, 0.1); color: var(--banda-texto); font-weight: 700; cursor: pointer; }
+    .par__destino:hover { background: rgba(255, 255, 255, 0.18); }
+    .par__destino option { color: var(--tinta); background: var(--superficie); }
+    .par__fuente { min-width: 0; font-weight: 500; }
+
+    /* Últimas traducciones de la tarjeta de la selección */
+    .recientes { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid var(--linea); }
+    .recientes__cabecera { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+    .recientes__cabecera h2 { font-size: 0.95rem; }
+    .recientes__lista { display: grid; gap: 6px; max-height: 260px; overflow-y: auto; overscroll-behavior: contain; margin: 0; padding: 0; list-style: none; }
+    .reciente { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; padding: 8px 10px; background: var(--papel); border-radius: 10px; }
+    .reciente__trad { font-weight: 600; white-space: pre-line; overflow-wrap: anywhere; overflow: hidden;
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; }
+    .reciente__orig { grid-column: 1; font-size: 0.82rem; color: var(--suave); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .reciente__acciones { grid-column: 2; grid-row: 1 / span 2; display: flex; align-items: start; gap: 6px; font-size: 0.82rem; }
+    .reciente__borrar { all: unset; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; color: var(--suave); cursor: pointer; }
+    .reciente__borrar:hover { background: var(--linea); color: var(--tinta); }
+    .reciente__borrar:focus-visible { outline: 2px solid var(--foco); }
+    .reciente__fav[aria-pressed="true"] { color: var(--aviso); }
+    .reciente__fav[aria-pressed="true"] svg { fill: currentColor; }
+  }
+  </style>
+  <style>body { font-size: 14px; }</style>
+</head>
+<body>
+  <header class="popup__cabecera">
+    <img class="marca" src="icons/marca.svg" alt="" width="26" height="26">
+    <h1 data-i18n="extName">Translator: Browser, AI &amp; Local</h1>
+    <button type="button" class="popup__ajustes" id="opts" aria-label="Settings" title="Settings" data-i18n-attr="aria-label:settings title:settings">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+  </header>
+
+  <div class="popup__cuerpo">
+    <p id="nokey" class="aviso" hidden data-i18n="popupNoKey">The translation service isn't fully set up yet. <button type="button" class="popup__enlace" id="opts2" data-i18n="setUp">Set up</button></p>
+    <p id="unsupported" class="aviso" hidden data-i18n="popupUnsupported">Chrome doesn't allow translating this page: it's an internal Chrome or Web Store page.</p>
+
+    <div id="controls" class="popup__controles">
+      <div class="par" role="group" aria-label="Languages" data-i18n-attr="aria-label:languages">
+        <span class="par__origen" id="fromBox"><span class="visualmente-oculto" data-i18n="fromSr">From </span><span id="from" data-i18n="pageLang">Page language</span></span>
+        <select id="src" class="par__destino par__fuente" aria-label="Translate from" data-i18n-attr="aria-label:translateFrom" hidden></select>
+        <svg class="par__flecha" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <label class="visualmente-oculto" for="lang" data-i18n="translateTo">Translate into</label>
+        <select id="lang" class="par__destino"></select>
+      </div>
+
+      <div id="dl" class="popup__descarga" hidden>
+        <p id="dlText" class="estado estado--aviso" role="status"></p>
+        <button type="button" id="dlBtn" class="boton boton--chico boton--principal" data-i18n="download">Download</button>
+        <progress id="dlBar" max="100" value="0" aria-labelledby="dlText" hidden></progress>
+      </div>
+      <button type="button" id="main" class="boton boton--principal popup__accion" data-i18n="translatePage">Translate this page</button>
+      <div class="popup__avance">
+        <progress id="bar" aria-labelledby="status" hidden></progress>
+        <p id="status" class="estado"></p>
+        <p id="statusSr" class="visualmente-oculto" role="status"></p>
+      </div>
+
+      <label class="interruptor">
+        <span class="interruptor__texto" data-i18n="popupAlways">Always translate on <span id="host"></span></span>
+        <input class="interruptor__input" type="checkbox" role="switch" id="always">
+        <span class="ayuda" data-i18n="popupAlwaysHint">Pages on this site are translated automatically when you open them.</span>
+      </label>
+
+      <label class="interruptor">
+        <span class="interruptor__texto" data-i18n="bilingual">Show original and translation</span>
+        <input class="interruptor__input" type="checkbox" role="switch" id="bilingual">
+        <span class="ayuda" data-i18n="bilingualHint">Paragraphs, headings and list items keep the original and show the translation below it. Handy for learning a language.</span>
+      </label>
+
+      <div id="context" class="popup__contexto" hidden></div>
+    </div>
+
+    <section class="recientes" aria-labelledby="recentTitle">
+      <div class="recientes__cabecera">
+        <h2 id="recentTitle" data-i18n="recent">Recent</h2>
+        <button type="button" id="recentClear" class="popup__enlace" data-i18n="recentClear" hidden>Clear all</button>
+      </div>
+      <label class="interruptor">
+        <span class="interruptor__texto" data-i18n="keepRecent">Keep recent translations</span>
+        <input class="interruptor__input" type="checkbox" role="switch" id="keepRecent">
+        <span class="ayuda" data-i18n="keepRecentHint">The last 20 translations of selected text, to see them again in the toolbar popup. Only on this computer; turning it off deletes them.</span>
+      </label>
+      <input type="search" id="recentSearch" autocomplete="off" placeholder="Search recent…" aria-label="Search recent" data-i18n-attr="placeholder:recentSearch aria-label:recentSearch" hidden>
+      <p id="recentEmpty" class="ayuda"></p>
+      <ul id="recentList" class="recientes__lista" role="list"></ul>
+      <p id="recentStatus" class="visualmente-oculto" role="status"></p>
+    </section>
+  </div>
+
+  <footer class="popup__pie">
+    <p data-i18n="popupUsing">Using <b id="svc"></b> · <button type="button" class="popup__enlace" id="change" data-i18n="change">Change</button></p>
+    <p><kbd>Alt</kbd>+<kbd>T</kbd></p>
+    <a class="donar popup__enlace" href="#" target="_blank" rel="noopener" hidden><span aria-hidden="true">☕</span> <span data-i18n="donate">Buy me a coffee</span></a>
+  </footer>
+
+  <script src="settings.js"></script>
+  <script src="nano.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

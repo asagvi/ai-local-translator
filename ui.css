@@ -1,0 +1,230 @@
+@layer ui, pagina;
+
+/* Estilos compartidos del popup y de Opciones. Verde = listo/traducido, violeta = se queda intacto. */
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  src: url(fonts/atkinson-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Atkinson Hyperlegible Next';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  src: url(fonts/atkinson-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@layer ui {
+:root {
+  --papel: #f3f5f9;
+  --superficie: #ffffff;
+  --tinta: #1b2238;
+  --suave: #566079;
+  --linea: #dce1eb;
+  --linea-fuerte: #b9c1d1;
+  --acento: #0b7a63;
+  --acento-texto: #ffffff;
+  --acento-fondo: #e3f4ee;
+  --intacto: #5a3ec2;
+  --intacto-fondo: #eeeafc;
+  --aviso: #8a5300;
+  --aviso-fondo: #fff2d6;
+  --error: #b42318;
+  --error-fondo: #fdeceb;
+  --foco: #2f6fde;
+  --banda: #1b2238;
+  --banda-texto: #eef1f8;
+  --banda-suave: #a9b3cc;
+  --banda-intacto: #cdbfff;
+  --banda-intacto-fondo: rgba(185, 168, 255, 0.16);
+  --radio: 12px;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --mono: ui-monospace, 'Cascadia Mono', 'DejaVu Sans Mono', Menlo, monospace;
+  color-scheme: light dark;
+}
+/* Oscuro: si lo pide el sistema y no se eligió claro, o si se eligió oscuro (Ajustes → Tema). */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --papel: #11141d;
+    --superficie: #191d29;
+    --tinta: #e6e9f1;
+    --suave: #a0a8bc;
+    --linea: #2b3142;
+    --linea-fuerte: #465069;
+    --acento: #3fc6a3;
+    --acento-texto: #08221b;
+    --acento-fondo: #15322b;
+    --intacto: #b9a8ff;
+    --intacto-fondo: #2a2550;
+    --aviso: #ffc861;
+    --aviso-fondo: #3a2c0c;
+    --error: #ff8a80;
+    --error-fondo: #3d1714;
+    --foco: #8db4ff;
+    --banda: #1f2539;
+  }
+}
+:root[data-theme="dark"] {
+  --papel: #11141d;
+  --superficie: #191d29;
+  --tinta: #e6e9f1;
+  --suave: #a0a8bc;
+  --linea: #2b3142;
+  --linea-fuerte: #465069;
+  --acento: #3fc6a3;
+  --acento-texto: #08221b;
+  --acento-fondo: #15322b;
+  --intacto: #b9a8ff;
+  --intacto-fondo: #2a2550;
+  --aviso: #ffc861;
+  --aviso-fondo: #3a2c0c;
+  --error: #ff8a80;
+  --error-fondo: #3d1714;
+  --foco: #8db4ff;
+  --banda: #1f2539;
+}
+:root[data-theme="light"] { color-scheme: light; }
+:root[data-theme="dark"] { color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--papel);
+  color: var(--tinta);
+}
+h1, h2, h3 { line-height: 1.2; margin: 0; text-wrap: balance; }
+h1 { font-size: 1.6rem; font-weight: 750; letter-spacing: -0.01em; }
+h2 { font-size: 1.15rem; font-weight: 700; }
+p { margin: 0; }
+a { color: var(--acento); text-underline-offset: 2px; }
+code { font-family: var(--mono); font-size: 0.9em; }
+:focus-visible { outline: 2px solid var(--foco); outline-offset: 2px; }
+
+.visualmente-oculto {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+
+/* Campos */
+.campo { display: grid; gap: 6px; }
+.campo__etiqueta { font-weight: 650; }
+.ayuda { color: var(--suave); font-size: 0.87rem; }
+input[type="text"], input[type="search"], input[type="url"], input[type="password"], input[type="number"], select, textarea {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--linea-fuerte);
+  border-radius: 8px;
+  background: var(--superficie);
+  color: var(--tinta);
+  font: inherit;
+}
+textarea { min-height: 84px; resize: vertical; font-family: var(--mono); font-size: 0.85rem; }
+input[type="radio"] { accent-color: var(--acento); }
+progress { appearance: none; width: 100%; height: 6px; border: 0; border-radius: 3px; background: var(--linea); overflow: hidden; }
+progress::-webkit-progress-bar { background: var(--linea); border-radius: 3px; }
+progress::-webkit-progress-value { background: var(--acento); border-radius: 3px; }
+
+/* Botones */
+.boton {
+  font: inherit;
+  font-weight: 650;
+  border: 1px solid var(--linea-fuerte);
+  background: var(--superficie);
+  color: var(--tinta);
+  border-radius: 8px;
+  padding: 9px 16px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.boton:hover { border-color: var(--tinta); }
+.boton--principal { background: var(--acento); border-color: var(--acento); color: var(--acento-texto); }
+.boton--principal:hover { border-color: var(--acento); filter: brightness(1.08); }
+.boton--chico { padding: 5px 11px; font-size: 0.87rem; }
+.boton:active:not(:disabled) { transform: scale(0.97); }
+.boton:disabled { opacity: 0.55; cursor: default; filter: none; }
+
+/* Interruptor: checkbox nativo con role="switch" */
+.interruptor {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 16px;
+  row-gap: 2px;
+  align-items: center;
+  cursor: pointer;
+}
+.interruptor__texto { font-weight: 650; }
+.interruptor__input {
+  appearance: none;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: 42px;
+  height: 24px;
+  margin: 0;
+  border-radius: 12px;
+  background: var(--linea-fuerte);
+  position: relative;
+  cursor: pointer;
+}
+.interruptor__input::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+}
+.interruptor__input:checked { background: var(--acento); }
+.interruptor:hover .interruptor__input:not(:disabled) { box-shadow: 0 0 0 3px color-mix(in srgb, var(--acento) 25%, transparent); }
+.interruptor__input:checked::before { transform: translateX(18px); }
+.interruptor__input:disabled { opacity: 0.45; cursor: default; }
+.interruptor:has(.interruptor__input:disabled) { cursor: default; }
+.interruptor:has(.interruptor__input:disabled) .interruptor__texto { color: var(--suave); }
+
+/* Lo que se deja sin traducir */
+.intacto {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  color: var(--intacto);
+  background: var(--intacto-fondo);
+  border-radius: 5px;
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+
+/* Mensajes de estado */
+.estado { font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+.estado--ok { color: var(--acento); }
+.estado--error { color: var(--error); }
+.estado--aviso { color: var(--aviso); }
+
+.aviso {
+  background: var(--aviso-fondo);
+  color: var(--aviso);
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+.aviso--error { background: var(--error-fondo); color: var(--error); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .boton { transition: transform 160ms var(--ease-out), border-color 150ms ease, filter 150ms ease; }
+  .interruptor__input { transition: background-color 180ms ease; }
+  .interruptor__input::before { transition: transform 200ms var(--ease-out); }
+}
+
+/* Marca: líneas de texto con un bloque que se queda igual */
+.marca { flex: none; display: block; }
+}
+
+/* Fuera de las capas: el CSS que Chrome inyecta en las páginas de extensión no tiene capa y si no, gana. */
+body { font: 15px/1.5 'Atkinson Hyperlegible Next', system-ui, sans-serif; }
+[hidden] { display: none; }

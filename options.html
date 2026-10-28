@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="optTitle">AI Translator · Settings</title>
+  <link rel="icon" href="icons/marca.svg">
+  <link rel="stylesheet" href="ui.css">
+  <script src="theme.js"></script>
+  <style>
+  @layer pagina {
+    body { padding: 0; }
+    /* La barra fija de abajo no tapa el campo con foco. */
+    :root { scroll-padding-bottom: 100px; }
+    .contenedor { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+    /* Franja de arriba: lo único llamativo de la página */
+    .cabecera { background: var(--banda); color: var(--banda-texto); padding: 28px 0 36px; }
+    .cabecera__marca { display: flex; align-items: center; gap: 12px; }
+    .cabecera__barra { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+    .cabecera__acciones { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .cabecera__donar { color: var(--banda-texto); font-size: 0.85rem; font-weight: 650; text-decoration: none; padding: 6px 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); }
+    .cabecera__donar:hover { background: rgba(255, 255, 255, 0.16); }
+    .cabecera__donar:focus-visible { outline: 2px solid var(--foco); outline-offset: 1px; }
+
+    /* Tema: se aplica al instante, no espera a Guardar */
+    .tema { border: 0; margin: 0; padding: 3px; display: flex; gap: 2px; background: rgba(255, 255, 255, 0.08); border-radius: 999px; }
+    .tema__opcion { position: relative; cursor: pointer; }
+    .tema__radio { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; }
+    .tema__opcion span { display: block; padding: 5px 12px; border-radius: 999px; font-size: 0.85rem; font-weight: 650; color: var(--banda-suave); }
+    .tema__opcion:hover span { color: var(--banda-texto); }
+    .tema__opcion:has(:checked) span { background: var(--banda-texto); color: var(--banda); }
+    .tema__opcion:has(:focus-visible) span { outline: 2px solid var(--foco); outline-offset: 1px; }
+    .cabecera__intro { color: var(--banda-suave); max-width: 62ch; margin-top: 10px; }
+    .muestra { margin: 28px 0 0; display: grid; gap: 10px; }
+    .muestra__linea { display: grid; grid-template-columns: 2.6em 1fr; align-items: baseline; gap: 12px; }
+    .muestra__idioma { font-size: 0.78rem; font-weight: 700; color: var(--banda-suave); border: 1px solid currentColor; border-radius: 6px; text-align: center; padding: 1px 0; }
+    .muestra__texto { font-size: 1.05rem; color: var(--banda-suave); }
+    .muestra__texto--traducido { font-size: clamp(1.25rem, 2.6vw, 1.7rem); font-weight: 600; color: var(--banda-texto); line-height: 1.35; letter-spacing: -0.01em; }
+    .muestra .intacto { color: var(--banda-intacto); background: var(--banda-intacto-fondo); }
+    .muestra__pie { margin-top: 8px; font-size: 0.87rem; color: var(--banda-suave); display: flex; align-items: center; gap: 8px; }
+    .muestra__clave { width: 12px; height: 12px; border-radius: 3px; background: var(--banda-intacto); flex: none; }
+
+    .columnas { display: grid; gap: 24px; align-items: start; margin-top: 28px; }
+    @media (min-width: 920px) { .columnas { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); } }
+
+    .bloque { background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--radio); padding: 24px; display: grid; gap: 20px; }
+    .bloque__intro { color: var(--suave); margin-top: 6px; }
+    .bloque__separador { border: 0; border-top: 1px solid var(--linea); margin: 0; width: 100%; }
+
+    .servicios { border: 0; padding: 0; margin: 0; display: grid; gap: 16px; min-width: 0; }
+    .servicios legend { padding: 0; }
+    .servicios__lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+    .servicios__mas > summary { list-style: none; cursor: pointer; font-weight: 650; display: flex; align-items: center; gap: 8px; padding: 6px 0; color: var(--suave); }
+    .servicios__mas > summary::-webkit-details-marker { display: none; }
+    .servicios__mas > summary:hover { color: var(--tinta); }
+    .servicios__grupos { display: grid; gap: 10px; margin-top: 10px; }
+    .servicios__grupo { margin: 8px 0 0; font-size: 0.8125rem; font-weight: 650; letter-spacing: 0.04em; text-transform: uppercase; color: var(--suave); }
+
+    .servicio { border: 1px solid var(--linea); border-radius: var(--radio); background: var(--superficie); }
+    .servicio:hover { border-color: var(--linea-fuerte); }
+    .servicio:has(.servicio__radio:checked) { border-color: var(--acento); box-shadow: 0 0 0 1px var(--acento); }
+    .servicio__opcion { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; padding: 16px 18px; cursor: pointer; }
+    .servicio__radio { grid-row: span 3; margin: 2px 0 0; width: 18px; height: 18px; }
+    .servicio__nombre { font-weight: 700; font-size: 1.02rem; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .servicio__recomendado { font-size: 0.76rem; font-weight: 700; color: var(--acento-texto); background: var(--acento); border-radius: 999px; padding: 1px 9px; }
+    .servicio__desc { color: var(--suave); font-size: 0.93rem; }
+    .servicio__rasgos { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .servicio__nodisp, .servicio__nota { grid-column: 2; margin-top: 6px; }
+    .servicio:has(.servicio__radio:disabled) .servicio__opcion { cursor: not-allowed; }
+    .servicio:has(.servicio__radio:disabled) :is(.servicio__nombre, .servicio__desc, .servicio__rasgos) { opacity: 0.55; }
+    .rasgo { font-size: 0.8rem; font-weight: 600; padding: 2px 9px; border-radius: 999px; background: var(--papel); color: var(--suave); }
+    .rasgo--bueno { background: var(--acento-fondo); color: var(--acento); }
+    .rasgo--ojo { background: var(--aviso-fondo); color: var(--aviso); }
+
+    .config { display: grid; gap: 18px; margin: 0 18px 18px 50px; padding: 18px; background: var(--papel); border-radius: 10px; }
+    .config__fila { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    .config__fila > input { flex: 1; min-width: 0; }
+    .config__fila--estado { margin-top: 12px; }
+    .config__grupo { display: grid; gap: 16px; }
+    @media (max-width: 560px) {
+      .contenedor { padding: 0 12px; }
+      .bloque { padding: 16px; }
+      .servicio__opcion { padding: 14px; gap: 4px 10px; }
+      .config { margin: 0 10px 10px; padding: 14px; }
+    }
+
+    .pasos { margin: 0; padding: 0; list-style: none; counter-reset: paso; display: grid; gap: 12px; }
+    .pasos > li { counter-increment: paso; display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; }
+    .pasos > li::before { content: counter(paso); display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--acento); color: var(--acento-texto); font-weight: 700; font-size: 0.85rem; }
+    .pasos__titulo { font-size: 1rem; margin-bottom: 12px; }
+    .pasos__enlace { margin-top: 8px; }
+    .pasos__nota { margin-top: 12px; }
+
+    .prueba { display: grid; gap: 12px; padding: 16px; border-radius: 10px; background: var(--superficie); border: 1px solid var(--linea); }
+    .prueba__linea { line-height: 1.7; }
+    .prueba__etiqueta { display: block; font-size: 0.8rem; color: var(--suave); }
+    .prueba__enlace { color: var(--acento); text-decoration: underline; }
+
+    .interruptores { display: grid; gap: 20px; }
+
+    .avanzado { margin-top: 24px; background: var(--superficie); border: 1px solid var(--linea); border-radius: var(--radio); }
+    .avanzado > summary { list-style: none; cursor: pointer; padding: 20px 24px; display: grid; grid-template-columns: 1fr auto; gap: 2px 16px; align-items: center; }
+    .avanzado > summary::-webkit-details-marker { display: none; }
+    .avanzado__titulo { font-weight: 700; font-size: 1.15rem; }
+    .avanzado__resumen { color: var(--suave); font-size: 0.92rem; }
+    .avanzado__flecha { grid-column: 2; grid-row: 1 / span 2; color: var(--suave); }
+    .avanzado[open] > summary > .avanzado__flecha, .servicios__mas[open] > summary > .avanzado__flecha,
+    .guia[open] > summary > .avanzado__flecha, .guia-ollama__so[open] > summary > .avanzado__flecha { transform: rotate(90deg); }
+    /* Guías plegables: abiertas mientras falta configurar, cerradas cuando ya está. */
+    .guia > summary, .guia-ollama__so > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+    .guia > summary::-webkit-details-marker, .guia-ollama__so > summary::-webkit-details-marker { display: none; }
+    .guia > summary .pasos__titulo { margin: 0; }
+    .guia[open] > summary { margin-bottom: 12px; }
+    .guia > summary .avanzado__flecha, .guia-ollama__so > summary .avanzado__flecha { color: var(--suave); flex: none; }
+    .guia-ollama__so > summary { font-weight: 650; font-size: 0.93rem; color: var(--suave); padding: 2px 0; }
+    .guia-ollama__so > summary:hover, .guia > summary:hover .avanzado__flecha { color: var(--tinta); }
+    .guia-ollama__so[open] { display: grid; gap: 6px; }
+    .avanzado__cuerpo { padding: 4px 24px 24px; display: grid; gap: 24px; }
+    @media (min-width: 920px) { .avanzado__cuerpo { grid-template-columns: 1fr 1fr; column-gap: 40px; } }
+    .dos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (prefers-reduced-motion: no-preference) { .avanzado__flecha { transition: transform 200ms var(--ease-out); } }
+
+    /* Selector de modelo: se abre en el mismo lugar, empujando lo de abajo */
+    .selector { display: grid; gap: 6px; }
+    .selector__boton { font: inherit; display: flex; align-items: center; gap: 8px; width: 100%; padding: 9px 11px; border: 1px solid var(--linea-fuerte); border-radius: 8px; background: var(--superficie); color: var(--tinta); text-align: start; cursor: pointer; }
+    .selector__boton:hover { border-color: var(--tinta); }
+    .selector__valor { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; overflow-wrap: anywhere; }
+    .selector__flecha { flex: none; color: var(--suave); }
+    .selector__boton[aria-expanded="true"] .selector__flecha { transform: rotate(180deg); }
+    .selector__panel { border: 1px solid var(--linea-fuerte); border-radius: 10px; background: var(--superficie); box-shadow: 0 8px 24px color-mix(in srgb, var(--tinta) 14%, transparent); overflow: hidden; }
+    .selector__barra { display: flex; flex-wrap: wrap; align-items: center; column-gap: 8px; padding-right: 8px; border-bottom: 1px solid var(--linea); }
+    .selector__filtros { display: flex; gap: 6px; margin-left: auto; padding-block: 6px; }
+    .selector__filtros:not(:has(.selector__filtro:not([hidden]))) { display: none; }
+    .selector__barra:has(.selector__buscar[hidden]) { display: none; }
+    .selector__buscar { flex: 1 1 12rem; border: 0; border-radius: 0; }
+    .selector__filtro { flex: none; font: inherit; font-size: 0.8rem; font-weight: 650; padding: 3px 10px; border: 1px solid var(--linea-fuerte); border-radius: 999px; background: none; color: var(--suave); cursor: pointer; white-space: nowrap; }
+    .selector__filtro:hover { border-color: var(--tinta); color: var(--tinta); }
+    .selector__filtro[aria-pressed="true"] { background: var(--acento-fondo); border-color: var(--acento); color: var(--acento); }
+    .selector__buscar:focus-visible, .selector__lista:focus-visible { outline-offset: -2px; }
+    .selector__lista { list-style: none; margin: 0; padding: 4px; max-height: 18rem; overflow-y: auto; overscroll-behavior: contain; }
+    .selector__opcion { display: grid; grid-template-columns: 18px 1fr; gap: 8px; align-items: center; padding: 7px 10px; border-radius: 6px; cursor: pointer; overflow-wrap: anywhere; }
+    .selector__opcion--activa { background: var(--papel); }
+    .selector__check { visibility: hidden; color: var(--acento); }
+    .selector__opcion[aria-selected="true"] .selector__check { visibility: visible; }
+    .selector__nombre { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+    .selector mark { background: none; color: inherit; font-weight: 750; }
+    .selector__vacio { padding: 12px 14px; }
+    .selector__cuenta { padding: 8px 14px; border-top: 1px solid var(--linea); font-variant-numeric: tabular-nums; }
+    @media (prefers-reduced-motion: no-preference) {
+      .selector__flecha { transition: transform 150ms var(--ease-out); }
+      .selector__panel { transition: opacity 150ms var(--ease-out), transform 150ms var(--ease-out); }
+      @starting-style { .selector__panel { opacity: 0; transform: translateY(-4px); } }
+    }
+
+    .guia-ollama__paso { display: grid; gap: 6px; min-width: 0; }
+    .guia-ollama__paso > .ayuda { margin-top: 4px; }
+    .guia-ollama__aviso { margin-top: 12px; }
+    .guia-ollama__aviso code { overflow-wrap: anywhere; }
+    /* Un clic selecciona el comando entero, listo para copiar. */
+    .comando { margin: 0; padding: 8px 12px; border-radius: 8px; background: var(--papel); border: 1px solid var(--linea); font-size: 0.85rem; line-height: 1.5; white-space: pre-wrap; word-break: break-all; user-select: all; }
+
+    .barra { position: sticky; bottom: 0; margin-top: 32px; padding: 12px 0; background: color-mix(in srgb, var(--superficie) 88%, transparent); backdrop-filter: blur(8px); border-top: 1px solid var(--linea); }
+    .barra__contenido { display: flex; gap: 12px; align-items: center; justify-content: flex-end; flex-wrap: wrap; }
+    .barra__estado { margin-right: auto; display: flex; align-items: center; gap: 8px; color: var(--suave); }
+    .barra__estado::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--linea-fuerte); flex: none; }
+    .barra__estado.estado--aviso::before { background: var(--aviso); }
+    .barra__estado.estado--ok::before { background: var(--acento); }
+  }
+  </style>
+</head>
+<body>
+<header class="cabecera">
+  <div class="contenedor">
+    <div class="cabecera__barra">
+      <div class="cabecera__marca">
+        <img class="marca" src="icons/marca.svg" alt="" width="36" height="36">
+        <h1 data-i18n="extName">Translator: Browser, AI &amp; Local</h1>
+      </div>
+      <div class="cabecera__acciones">
+      <a class="donar cabecera__donar" href="#" target="_blank" rel="noopener" hidden><span aria-hidden="true">☕</span> <span data-i18n="donate">Buy me a coffee</span></a>
+      <fieldset class="tema">
+        <legend class="visualmente-oculto" data-i18n="theme">Theme</legend>
+        <label class="tema__opcion"><input class="tema__radio" type="radio" name="tema" value="auto"><span data-i18n="themeAuto">Automatic</span></label>
+        <label class="tema__opcion"><input class="tema__radio" type="radio" name="tema" value="light"><span data-i18n="themeLight">Light</span></label>
+        <label class="tema__opcion"><input class="tema__radio" type="radio" name="tema" value="dark"><span data-i18n="themeDark">Dark</span></label>
+      </fieldset>
+      </div>
+    </div>
+    <p class="cabecera__intro" data-i18n="intro">Translates whole pages and leaves alone what shouldn't be translated: code, commands, file names, addresses and brands.</p>
+    <figure class="muestra">
+      <p class="muestra__linea"><span class="muestra__idioma"><span aria-hidden="true" data-i18n="sampleFromCode">ES</span><span class="visualmente-oculto" data-i18n="sampleFromName">Spanish:</span></span><span class="muestra__texto" lang="es" data-i18n="sampleFrom" data-i18n-attr="lang:sampleFromLang">Pulsa <span class="intacto">Ctrl + S</span> para guardar <span class="intacto">budget.xlsx</span> en tu carpeta.</span></p>
+      <p class="muestra__linea"><span class="muestra__idioma"><span aria-hidden="true" data-i18n="sampleToCode">EN</span><span class="visualmente-oculto" data-i18n="sampleToName">English:</span></span><span class="muestra__texto muestra__texto--traducido" data-i18n="sampleTo">Press <span class="intacto">Ctrl + S</span> to save <span class="intacto">budget.xlsx</span> in your folder.</span></p>
+      <figcaption class="muestra__pie"><span class="muestra__clave" aria-hidden="true"></span><span data-i18n="sampleKey">Anything marked like this stays as it is.</span></figcaption>
+    </figure>
+  </div>
+</header>
+
+<form id="form" novalidate>
+<div class="contenedor">
+  <div class="columnas">
+    <section class="bloque" aria-labelledby="t-servicio">
+      <fieldset class="servicios">
+        <legend>
+          <h2 id="t-servicio" data-i18n="svcTitle">What do you want to translate with?</h2>
+          <p class="bloque__intro" data-i18n="svcIntro">If you're not sure, keep the recommended one. You can change it anytime.</p>
+        </legend>
+        <ul class="servicios__lista" role="list" id="mainList"></ul>
+        <details class="servicios__mas" id="more">
+          <summary><svg class="avanzado__flecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><span data-i18n="moreServices">Advanced: Claude, OpenAI, OpenRouter, Ollama, LM Studio</span></summary>
+          <div class="servicios__grupos" id="moreList"></div>
+        </details>
+      </fieldset>
+
+      <!-- Se mueve debajo del servicio elegido -->
+      <div class="config" id="setup">
+        <div id="localPanel">
+          <p id="chromeInfo" class="ayuda" data-i18n="chromeInfo">If a sentence comes out with broken links or bold text, Gemini Nano fixes it: an AI that only Google Chrome includes.</p>
+          <p id="hybridInfo" class="ayuda" data-i18n="hybridInfo">If a sentence comes out with broken links or bold text, Gemini fixes it: only those sentences are sent.</p>
+          <div class="config__fila config__fila--estado">
+            <p id="localStatus" class="estado" role="status"></p>
+            <button type="button" id="localBtn" class="boton boton--chico" data-i18n="check">Check</button>
+          </div>
+          <progress id="localProgress" max="100" value="0" aria-labelledby="localStatus" hidden></progress>
+          <div id="nanoRow" hidden>
+            <div class="config__fila config__fila--estado">
+              <p id="nanoStatus" class="estado" role="status"></p>
+              <button type="button" id="nanoBtn" class="boton boton--chico" data-i18n="downloadNano">Download Gemini Nano</button>
+            </div>
+            <progress id="nanoProgress" max="100" value="0" aria-labelledby="nanoStatus" hidden></progress>
+          </div>
+        </div>
+
+        <details class="guia" id="geminiGuide">
+          <summary><svg class="avanzado__flecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><h3 class="pasos__titulo" data-i18n="guideTitle">Get your free API key in a minute</h3></summary>
+          <ol class="pasos">
+            <li><div><span data-i18n="guide1">Open Google AI Studio and sign in with your Google account.</span>
+              <div class="pasos__enlace"><a class="boton boton--chico" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" data-i18n="guideOpen">Open Google AI Studio</a></div></div></li>
+            <li><div data-i18n="guide2">Accept the terms if asked. If you don't see a key, click <b>Create API key</b>.</div></li>
+            <li><div data-i18n="guide4">Copy the key and paste it below. We'll pick the best model for translating.</div></li>
+          </ol>
+          <p class="ayuda pasos__nota" data-i18n="guideNote">No credit card needed. If you hit the per-minute limit, translation waits a few seconds and continues on its own. Google may use what you send with a free key to improve its products.</p>
+        </details>
+
+        <p class="aviso" id="localSlow" data-i18n="localSlow" hidden>Models on your computer can translate more slowly than online services: it depends on your graphics card. For translating we recommend Gemma 4 12B, which needs about 8 GB of graphics memory.</p>
+
+        <details class="guia guia-ollama" id="ollamaGuide" hidden>
+          <summary><svg class="avanzado__flecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><h3 class="pasos__titulo" data-i18n="ollamaTitle">Connect Ollama</h3></summary>
+          <ol class="pasos">
+            <li><div class="guia-ollama__paso">
+              <p data-i18n="ollamaAllow">Allow this extension. Until you do, Ollama rejects it with error 403.</p>
+              <details class="guia-ollama__so" id="soLinux">
+              <summary><svg class="avanzado__flecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><span translate="no">Linux</span></summary>
+              <p class="ayuda" data-i18n="ollamaLinux">On Linux, open the service settings:</p>
+              <pre class="comando" translate="no"><code>sudo systemctl edit ollama</code></pre>
+              <p class="ayuda" data-i18n="ollamaLinuxPaste">Write this at the top, save, and restart Ollama:</p>
+              <pre class="comando" translate="no"><code class="origen-ext" data-plantilla='[Service]&#10;Environment="OLLAMA_ORIGINS={o}"'>[Service]
+Environment="OLLAMA_ORIGINS=chrome-extension://…"</code></pre>
+              <pre class="comando" translate="no"><code>sudo systemctl restart ollama</code></pre>
+              </details>
+              <details class="guia-ollama__so" id="soOtro">
+              <summary><svg class="avanzado__flecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg><span translate="no">Windows / macOS</span></summary>
+              <p class="ayuda" data-i18n="ollamaOther">On Windows or macOS, create this environment variable and restart Ollama:</p>
+              <pre class="comando" translate="no"><code class="origen-ext" data-plantilla="OLLAMA_ORIGINS={o}">OLLAMA_ORIGINS=chrome-extension://…</code></pre>
+              </details>
+            </div></li>
+            <li><div class="guia-ollama__paso">
+              <p data-i18n="ollamaPull">Download a model and choose it below, for example:</p>
+              <pre class="comando" translate="no"><code>ollama pull gemma4:12b</code></pre>
+            </div></li>
+          </ol>
+          <p class="aviso guia-ollama__aviso" data-i18n="ollamaContext">With less than 24 GB of graphics memory, Ollama reads only 4096 tokens per request and silently drops the rest. That's why 1500 characters are sent at a time (Advanced → Speed). To send more, add <code translate="no">Environment="OLLAMA_CONTEXT_LENGTH=8192"</code> under the permission and restart Ollama: it uses more graphics memory.</p>
+        </details>
+
+        <div id="apiFields" class="config__grupo">
+          <div class="campo" id="baseRow">
+            <label class="campo__etiqueta" for="baseUrl" data-i18n="serverAddr">Server address</label>
+            <input type="url" id="baseUrl" spellcheck="false" autocomplete="off">
+            <p class="ayuda" id="baseHint"></p>
+          </div>
+          <div class="campo" id="keyRow">
+            <label class="campo__etiqueta" for="apiKey" data-i18n="apiKeyLabel">API key</label>
+            <div class="config__fila">
+              <input type="password" id="apiKey" spellcheck="false" autocomplete="off" aria-describedby="keyLimit">
+              <button type="button" id="showKey" class="boton boton--chico" data-i18n="show">Show</button>
+            </div>
+            <p class="ayuda" data-i18n="keyNote">Stored only in this browser and sent only to this service.</p>
+            <p class="ayuda" id="keyLimit"></p>
+            <label class="interruptor">
+              <span class="interruptor__texto" data-i18n="sessionKeys">Forget API keys when closing the browser</span>
+              <input class="interruptor__input" type="checkbox" role="switch" id="sessionKeys">
+              <span class="ayuda" data-i18n="sessionKeysHint">They aren't saved on this computer: you'll paste them again each time you open the browser. Useful on a shared computer.</span>
+            </label>
+          </div>
+          <div class="campo" id="modelRow">
+            <label class="campo__etiqueta" for="model" id="modelLabel" data-i18n="model">Model</label>
+            <!-- Botón que abre, en el mismo lugar, el buscador y la lista (patrón combobox de ARIA) -->
+            <div class="selector" id="modelPick" hidden>
+              <button type="button" class="selector__boton" id="modelBtn" aria-haspopup="listbox" aria-expanded="false" aria-controls="modelPanel" aria-labelledby="modelLabel modelValue">
+                <span class="selector__valor" id="modelValue"></span>
+                <svg class="selector__flecha" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <div class="selector__panel" id="modelPanel" hidden>
+                <div class="selector__barra">
+                <input type="search" class="selector__buscar" id="modelSearch" role="combobox" aria-autocomplete="list" aria-expanded="true" aria-controls="modelList" spellcheck="false" autocomplete="off" aria-label="Search models" placeholder="Search models…" data-i18n-attr="aria-label:modelSearchAria placeholder:modelSearchPh">
+                <span class="selector__filtros">
+                  <button type="button" class="selector__filtro" id="modelFree" data-filtro="free" aria-pressed="false" aria-controls="modelList" data-i18n="modelsFreeOnly" hidden>Free only</button>
+                  <button type="button" class="selector__filtro" id="modelTranslation" data-filtro="translation" aria-pressed="false" aria-controls="modelList" data-i18n="modelsForTranslation" hidden>For translation</button>
+                </span>
+                </div>
+                <ul class="selector__lista" id="modelList" role="listbox" tabindex="-1" aria-labelledby="modelLabel"></ul>
+                <p class="selector__vacio ayuda" id="modelEmpty" hidden></p>
+                <p class="selector__cuenta ayuda" id="modelCount" role="status"></p>
+              </div>
+            </div>
+            <input type="text" id="model" spellcheck="false" autocomplete="off">
+            <p class="ayuda" id="modelHint" role="status"></p>
+          </div>
+        </div>
+
+        <div class="config__fila">
+          <button type="button" id="testBtn" class="boton boton--chico" data-i18n="testBtn">Test translation</button>
+          <p id="testStatus" class="estado" role="status"></p>
+        </div>
+        <div id="test" class="prueba" hidden></div>
+      </div>
+    </section>
+
+    <section class="bloque" aria-labelledby="t-pref">
+      <h2 id="t-pref" data-i18n="prefs">Preferences</h2>
+      <div class="campo">
+        <label class="campo__etiqueta" for="langPick" data-i18n="translateTo">Translate into</label>
+        <select id="langPick"></select>
+        <input type="text" id="targetLang" autocomplete="off" aria-label="Other language" placeholder="Type the language, for example: Català…" data-i18n-attr="aria-label:otherLangAria placeholder:otherLangPh" hidden>
+        <p class="ayuda" data-i18n="langHint">If it's not on the list, choose “Other language” and type it.</p>
+        <p class="estado" id="langStatus" role="status"></p>
+      </div>
+
+      <hr class="bloque__separador">
+      <div class="interruptores">
+        <label class="interruptor">
+          <span class="interruptor__texto" data-i18n="showBadge">Show the indicator on the page</span>
+          <input class="interruptor__input" type="checkbox" role="switch" id="showBadge">
+          <span class="ayuda" data-i18n="showBadgeHint">A small notice at the bottom right with the progress and a button to see the original.</span>
+        </label>
+        <label class="interruptor">
+          <span class="interruptor__texto" data-i18n="bilingual">Show original and translation</span>
+          <input class="interruptor__input" type="checkbox" role="switch" id="bilingual">
+          <span class="ayuda" data-i18n="bilingualHint">Paragraphs, headings and list items keep the original and show the translation below it. Handy for learning a language.</span>
+        </label>
+        <label class="interruptor">
+          <span class="interruptor__texto" data-i18n="selectionButton">Show a button when you select text</span>
+          <input class="interruptor__input" type="checkbox" role="switch" id="selectionButton">
+          <span class="ayuda" data-i18n="selectionButtonHint">Click it to see the translation of what you selected. You can also use “Translate selection” in the right-click menu.</span>
+        </label>
+        <label class="interruptor">
+          <span class="interruptor__texto" data-i18n="keepRecent">Keep recent translations</span>
+          <input class="interruptor__input" type="checkbox" role="switch" id="keepRecent">
+          <span class="ayuda" data-i18n="keepRecentHint">The last 20 translations of selected text, to see them again in the toolbar popup. Only on this computer; turning it off deletes them.</span>
+        </label>
+        <label class="interruptor">
+          <span class="interruptor__texto" data-i18n="useCache">Remember translations</span>
+          <input class="interruptor__input" type="checkbox" role="switch" id="useCache">
+          <span class="ayuda" data-i18n="useCacheHint">When you come back to a page, it's translated instantly and doesn't use up your limit.</span>
+        </label>
+        <label class="interruptor">
+          <span class="interruptor__texto" data-i18n="contextFirst">Understand the page before translating</span>
+          <input class="interruptor__input" type="checkbox" role="switch" id="contextFirst" aria-describedby="contextHint">
+          <span class="ayuda" id="contextHint" data-i18n="contextHint">The AI first reads what the page is about so it can respect names and terms. It makes one extra request per page.</span>
+        </label>
+        <label class="interruptor" id="uiEnglishRow">
+          <span class="interruptor__texto" data-i18n="uiEnglish">Interface in English</span>
+          <input class="interruptor__input" type="checkbox" role="switch" id="uiEnglish">
+          <span class="ayuda" data-i18n="uiEnglishHint">Shows the extension in English even if your browser uses another language. Its name and keyboard shortcut still follow the browser.</span>
+        </label>
+      </div>
+
+      <hr class="bloque__separador">
+      <div class="campo">
+        <label class="campo__etiqueta" for="alwaysSites" data-i18n="alwaysSites">Always translate on these sites</label>
+        <textarea id="alwaysSites" placeholder="nytimes.com&#10;reddit.com" aria-describedby="sitesHint"></textarea>
+      </div>
+      <div class="campo">
+        <label class="campo__etiqueta" for="neverSites" data-i18n="neverSites">Never translate on these sites</label>
+        <textarea id="neverSites" data-i18n-attr="placeholder:neverSitesPh" placeholder="mybank.com" aria-describedby="sitesHint"></textarea>
+        <p class="ayuda" id="sitesHint" data-i18n="sitesHint">One site per line, for example <code>wikipedia.org</code>. Includes its subdomains.</p>
+      </div>
+    </section>
+  </div>
+
+  <details class="avanzado" id="advanced">
+    <summary>
+      <span class="avanzado__titulo" data-i18n="advanced">Advanced</span>
+      <span class="avanzado__resumen" data-i18n="advancedSummary">Style instructions, glossary, parts to exclude, speed and saved translations.</span>
+      <svg class="avanzado__flecha" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+    </summary>
+    <div class="avanzado__cuerpo">
+      <div class="campo">
+        <label class="campo__etiqueta" for="style" data-i18n="styleLabel">Style instructions for the AI</label>
+        <textarea id="style" data-i18n-attr="placeholder:stylePh" placeholder="E.g.: Casual tone. Keep product and TV show names in their original language."></textarea>
+        <p class="ayuda" data-i18n="styleHint">Optional. Not used with Chrome Translator, which doesn't take instructions.</p>
+      </div>
+      <div class="campo">
+        <label class="campo__etiqueta" for="glossary" data-i18n="glossaryLabel">Your glossary</label>
+        <textarea id="glossary" aria-describedby="glossaryHint" data-i18n-attr="placeholder:glossaryPh" placeholder="boutique = shop
+Black Friday"></textarea>
+        <p class="ayuda" id="glossaryHint" data-i18n="glossaryHint">One rule per line. "X = Y" always translates X as Y; just "X" keeps it untranslated. Whole words, upper or lower case. With Chrome Translator, Y goes in exactly as written, so the words around it may not agree with it.</p>
+      </div>
+      <div class="campo">
+        <label class="campo__etiqueta" for="skipSelectors" data-i18n="skipLabel">Parts of the page you don't want translated</label>
+        <textarea id="skipSelectors" data-i18n-attr="placeholder:skipPh" placeholder=".price
+@amazon.com .a-price
+@youtube.com #channel-name"></textarea>
+        <p class="ayuda" data-i18n="skipHint">Only if a site translates something you want to keep as it is (prices, names, usernames). Use CSS selectors, one per line; with <code data-i18n="domainCode">@domain</code> in front, it applies only to that site. Brands, @usernames, #hashtags, addresses, emails, code and commands are already kept automatically.</p>
+      </div>
+      <div class="campo">
+        <span class="campo__etiqueta" data-i18n="speed">Speed</span>
+        <div class="dos">
+          <div class="campo">
+            <label for="maxChars" data-i18n="maxChars">Characters per request</label>
+            <input type="number" id="maxChars" min="500" max="12000" step="250">
+          </div>
+          <div class="campo">
+            <label for="concurrency" data-i18n="concurrency">Requests at a time</label>
+            <input type="number" id="concurrency" min="1" max="8">
+          </div>
+        </div>
+        <p class="ayuda" data-i18n="speedHint">These adjust themselves when you choose a service. With LM Studio or Ollama, 1 request at a time and about 1500 characters works best.</p>
+      </div>
+      <div class="campo">
+        <span class="campo__etiqueta" data-i18n="savedTr">Saved translations</span>
+        <div class="config__fila">
+          <button type="button" id="clearCache" class="boton boton--chico" data-i18n="clearCache">Delete saved translations</button>
+          <p id="cacheStatus" class="estado" role="status"></p>
+        </div>
+        <p class="ayuda" data-i18n="clearHint">Useful if you changed services and want pages to be translated again.</p>
+      </div>
+    </div>
+  </details>
+</div>
+
+  <footer class="barra">
+    <div class="contenedor barra__contenido">
+      <p id="msg" class="estado barra__estado" role="status"></p>
+      <button type="submit" class="boton boton--principal" id="save" data-i18n="save">Save changes</button>
+    </div>
+  </footer>
+</form>
+<script src="settings.js"></script>
+<script src="nano.js"></script>
+<script src="options.js"></script>
+</body>
+</html>

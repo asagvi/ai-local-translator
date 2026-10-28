@@ -1,0 +1,11 @@
+# Zip para la Web Store: lo arma empaquetar.sh
+dist/
+
+# Clave privada que genera Chrome al empaquetar una extensión
+*.pem
+
+# Herramientas locales
+.claude/
+.playwright-mcp/
+.codegraph/
+__pycache__/

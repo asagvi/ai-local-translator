@@ -1,0 +1,788 @@
+{
+  "extName": {
+    "message": "Translator: Browser, AI & Local"
+  },
+  "extShortName": {
+    "message": "AI Translator"
+  },
+  "extDesc": {
+    "message": "Übersetzt Webseiten mit KI, die den Kontext versteht: Code, Befehle, Bezeichner und Eigennamen bleiben unverändert."
+  },
+  "cmdToggle": {
+    "message": "Übersetzen / Original anzeigen"
+  },
+  "menuToggle": {
+    "message": "Seite mit KI übersetzen / Original anzeigen"
+  },
+  "svcChromeLabel": {
+    "message": "Chrome-Übersetzer"
+  },
+  "svcChromeDesc": {
+    "message": "Der in Chrome eingebaute Übersetzer. Ohne Konto: Was du liest, verlässt deinen Computer nicht."
+  },
+  "svcHybridLabel": {
+    "message": "Chrome-Übersetzer + Google Gemini"
+  },
+  "svcHybridDesc": {
+    "message": "Es übersetzt der Chrome-Übersetzer, auf deinem Computer. Nur Sätze mit kaputten Links oder Fettschrift gehen an Gemini, damit es sie repariert."
+  },
+  "svcNoTranslator": {
+    "message": "In diesem Browser nicht verfügbar. Der Chrome-Übersetzer ist in Google Chrome enthalten."
+  },
+  "svcGeminiLabel": {
+    "message": "Google Gemini"
+  },
+  "svcGeminiDesc": {
+    "message": "Die KI von Google liest die Seite, bevor sie sie übersetzt: Sie versteht das Thema und bewahrt Eigennamen besser. Der ganze Text geht an Google."
+  },
+  "svcAnthropicDesc": {
+    "message": "Kostenpflichtig. Benötigt einen API-Schlüssel von Anthropic."
+  },
+  "svcOpenaiDesc": {
+    "message": "Kostenpflichtig. Benötigt einen API-Schlüssel von OpenAI."
+  },
+  "svcOpenrouterDesc": {
+    "message": "Hunderte Modelle mit einem einzigen Schlüssel; einige sind kostenlos."
+  },
+  "svcLmstudioDesc": {
+    "message": "Ein Modell, das mit LM Studio auf deinem Computer läuft."
+  },
+  "svcOllamaDesc": {
+    "message": "Ein Modell, das mit Ollama auf deinem Computer läuft."
+  },
+  "svcCustomLabel": {
+    "message": "Anderer OpenAI-kompatibler Dienst"
+  },
+  "svcCustomDesc": {
+    "message": "Gib die Serveradresse ein und, falls nötig, den API-Schlüssel."
+  },
+  "hintKeyAuto": {
+    "message": "Schlüssel einfügen, das Modell wird automatisch gewählt"
+  },
+  "hintKeyPick": {
+    "message": "Schlüssel einfügen und eines aus der Liste wählen"
+  },
+  "hintLmstudio": {
+    "message": "das in LM Studio geladene Modell wird verwendet"
+  },
+  "hintOllama": {
+    "message": "eines der in Ollama heruntergeladenen Modelle wählen"
+  },
+  "hintCustom": {
+    "message": "Modellname"
+  },
+  "errNanoBrowser": {
+    "message": "Gemini Nano: $1 enthält die integrierte KI von Chrome nicht. Nutze Google Chrome oder wähle „$2“ mit einem kostenlosen Schlüssel."
+  },
+  "errNanoOld": {
+    "message": "Gemini Nano: Diese Chrome-Version enthält die integrierte KI nicht. Aktualisiere auf Chrome 138 oder neuer."
+  },
+  "errNanoUnavailable": {
+    "message": "Gemini Nano: Laut Chrome nicht verfügbar. Prüfe chrome://on-device-internals: nötig sind 22 GB freier Speicher und eine GPU mit mehr als 4 GB VRAM (oder 16 GB RAM). Das passiert auch, wenn die Grafikkarte ausgelastet ist (ein anderes KI-Modell, ein Spiel, Videobearbeitung…): gib sie frei und starte Chrome neu."
+  },
+  "errNanoLang": {
+    "message": "Gemini Nano: Diese Sprache wird nicht unterstützt (nur Englisch, Spanisch, Japanisch, Deutsch und Französisch)."
+  },
+  "errNanoNotDownloaded": {
+    "message": "Gemini Nano: Das Modell ist noch nicht heruntergeladen. Gehe zu Einstellungen → Chrome-Übersetzer → „Gemini Nano herunterladen“."
+  },
+  "errTrDownload": {
+    "message": "Chrome-Übersetzer: Diese Sprache ist noch nicht heruntergeladen. Gehe zu Einstellungen → Chrome-Übersetzer → „Herunterladen“."
+  },
+  "errNanoTarget": {
+    "message": "Gemini Nano: Übersetzen in „$1“ ist nicht möglich. Nur Englisch, Spanisch, Japanisch, Deutsch und Französisch; für andere Sprachen Gemini mit Schlüssel verwenden."
+  },
+  "errNanoNoReply": {
+    "message": "Gemini Nano: Die integrierte KI hat nicht geantwortet."
+  },
+  "errTrBrowser": {
+    "message": "Chrome-Übersetzer: $1 enthält ihn nicht. Nutze Google Chrome oder wähle „$2“ mit einem kostenlosen Schlüssel."
+  },
+  "errTrOld": {
+    "message": "Chrome-Übersetzer: Diese Chrome-Version enthält ihn nicht. Aktualisiere auf Chrome 138 oder neuer."
+  },
+  "errTrLang": {
+    "message": "Chrome-Übersetzer: Er übersetzt nicht in diese Sprache."
+  },
+  "errKey": {
+    "message": "Ungültiger API-Schlüssel oder fehlende Berechtigung ($1): $2"
+  },
+  "err404": {
+    "message": "Modell oder Endpunkt nicht gefunden (404): $1"
+  },
+  "errNoBase": {
+    "message": "Die Serveradresse des Dienstes fehlt (Einstellungen)."
+  },
+  "errNoKey": {
+    "message": "Der API-Schlüssel fehlt (Einstellungen)."
+  },
+  "errNoModel": {
+    "message": "Der Modellname fehlt (Einstellungen)."
+  },
+  "errTimeout": {
+    "message": "Die KI hat zu lange gebraucht (Timeout)."
+  },
+  "errConnect": {
+    "message": "Keine Verbindung zu $1: $2"
+  },
+  "errUnreadable": {
+    "message": "Die Antwort des Dienstes ist nicht lesbar."
+  },
+  "errEmpty": {
+    "message": "Die KI hat eine leere Antwort geliefert."
+  },
+  "errNoJson": {
+    "message": "Die KI hat kein gültiges JSON geliefert."
+  },
+  "errNoReply": {
+    "message": "Keine Antwort von der Erweiterung"
+  },
+  "onDevice": {
+    "message": "$1 (auf deinem Gerät)"
+  },
+  "badgeHide": {
+    "message": "Anzeige ausblenden"
+  },
+  "hide": {
+    "message": "Ausblenden"
+  },
+  "show": {
+    "message": "Anzeigen"
+  },
+  "viewingOriginal": {
+    "message": "Du siehst das Original"
+  },
+  "translate": {
+    "message": "Übersetzen"
+  },
+  "showOriginal": {
+    "message": "Original anzeigen"
+  },
+  "showTranslation": {
+    "message": "Übersetzung anzeigen"
+  },
+  "badgeRateLimit": {
+    "message": "API-Limit: Fortsetzung in $1 s ($2 von $3)"
+  },
+  "analyzing": {
+    "message": "Lese, worum es auf der Seite geht…"
+  },
+  "progress": {
+    "message": "Übersetze… $1 von $2"
+  },
+  "badgeDone": {
+    "message": "Übersetzt in: $1"
+  },
+  "badgeDoneErrors": {
+    "message": "Übersetzt in: $1. Nicht übersetzt: $2"
+  },
+  "settings": {
+    "message": "Einstellungen"
+  },
+  "popupNoKey": {
+    "message": "Der Übersetzungsdienst ist noch nicht fertig eingerichtet. $1"
+  },
+  "popupNeedLang": {
+    "message": "$1 muss zuerst heruntergeladen werden (einige MB, nur einmal)."
+  },
+  "setUp": {
+    "message": "Einrichten"
+  },
+  "popupUnsupported": {
+    "message": "Chrome erlaubt nicht, diese Seite zu übersetzen: Es ist eine interne Seite von Chrome oder vom Web Store."
+  },
+  "languages": {
+    "message": "Sprachen"
+  },
+  "fromSr": {
+    "message": "Von "
+  },
+  "pageLang": {
+    "message": "Sprache der Seite"
+  },
+  "translateTo": {
+    "message": "Übersetzen in"
+  },
+  "translatePage": {
+    "message": "Diese Seite übersetzen"
+  },
+  "popupAlways": {
+    "message": "Auf $1 immer übersetzen"
+  },
+  "popupAlwaysHint": {
+    "message": "Seiten dieser Website werden beim Öffnen automatisch übersetzt."
+  },
+  "bilingual": {
+    "message": "Original und Übersetzung zeigen"
+  },
+  "bilingualHint": {
+    "message": "Absätze, Überschriften und Listenpunkte behalten das Original und zeigen die Übersetzung darunter. Praktisch zum Sprachenlernen."
+  },
+  "thisPage": {
+    "message": "dieser Seite"
+  },
+  "popupUsing": {
+    "message": "Dienst: $1 · $2"
+  },
+  "change": {
+    "message": "Ändern"
+  },
+  "errTab": {
+    "message": "Kein Zugriff auf diesen Tab. Lade ihn neu und versuche es noch einmal."
+  },
+  "doneOk": {
+    "message": "✓ Seite übersetzt."
+  },
+  "doneErrors": {
+    "message": "✓ Seite übersetzt. Im Original geblieben: $1"
+  },
+  "ctxDetected": {
+    "message": "Erkannte Seite: $1"
+  },
+  "ctxKept": {
+    "message": "Nicht übersetzt: $1"
+  },
+  "optTitle": {
+    "message": "KI-Übersetzer · Einstellungen"
+  },
+  "theme": {
+    "message": "Design"
+  },
+  "themeAuto": {
+    "message": "Automatisch"
+  },
+  "themeLight": {
+    "message": "Hell"
+  },
+  "themeDark": {
+    "message": "Dunkel"
+  },
+  "donate": {
+    "message": "Spendier mir einen Kaffee"
+  },
+  "intro": {
+    "message": "Übersetzt ganze Seiten und lässt unverändert, was nicht übersetzt werden soll: Code, Befehle, Dateinamen, Adressen und Marken."
+  },
+  "sampleFromLang": {
+    "message": "en"
+  },
+  "sampleFromCode": {
+    "message": "EN"
+  },
+  "sampleFromName": {
+    "message": "Englisch:"
+  },
+  "sampleFrom": {
+    "message": "Press $1 to save $2 in your folder."
+  },
+  "sampleToCode": {
+    "message": "DE"
+  },
+  "sampleToName": {
+    "message": "Deutsch:"
+  },
+  "sampleTo": {
+    "message": "Drücke $1, um $2 in deinem Ordner zu speichern."
+  },
+  "sampleKey": {
+    "message": "So Markiertes bleibt, wie es ist."
+  },
+  "svcTitle": {
+    "message": "Womit möchtest du übersetzen?"
+  },
+  "svcIntro": {
+    "message": "Wenn du unsicher bist, lass den empfohlenen Dienst. Du kannst ihn jederzeit ändern."
+  },
+  "moreServices": {
+    "message": "Erweitert: Claude, OpenAI, OpenRouter, Ollama, LM Studio"
+  },
+  "recommended": {
+    "message": "Empfohlen"
+  },
+  "tagFree": {
+    "message": "Kostenlos"
+  },
+  "tagVeryFast": {
+    "message": "Sehr schnell"
+  },
+  "tagFast": {
+    "message": "Schnell"
+  },
+  "tagOnDevice": {
+    "message": "Auf deinem Gerät"
+  },
+  "tagCloud": {
+    "message": "In der Cloud"
+  },
+  "tagFreeLimited": {
+    "message": "Kostenlos mit Limit"
+  },
+  "tagNeedsKey": {
+    "message": "Braucht API-Schlüssel"
+  },
+  "tagPaid": {
+    "message": "Kostenpflichtig"
+  },
+  "tagSomeFree": {
+    "message": "Einige kostenlos"
+  },
+  "chromeInfo": {
+    "message": "Wenn Links oder fett formatierter Text in einem Satz beschädigt sind, korrigiert ihn Gemini Nano: eine KI, die nur Google Chrome mitbringt."
+  },
+  "chromeInfoNoNano": {
+    "message": "Dieser Browser bringt Gemini Nano nicht mit (nur Google Chrome hat es), daher bleibt ein Satz mit beschädigten Links oder fett formatiertem Text in der Originalsprache. Damit eine KI ihn korrigiert, wähle „$1“."
+  },
+  "chromeInfoNoNanoHw": {
+    "message": "Gemini Nano läuft auf diesem Computer nicht (es braucht mehr als 4 GB Grafikspeicher oder 16 GB RAM und 22 GB freien Speicherplatz), daher bleibt ein Satz mit beschädigten Links oder fett formatiertem Text in der Originalsprache. Damit eine KI ihn korrigiert, wähle „$1“. Das passiert auch, wenn die Grafikkarte ausgelastet ist (ein anderes KI-Modell, ein Spiel, Videobearbeitung…): gib sie frei und starte Chrome neu."
+  },
+  "downloadNano": {
+    "message": "Gemini Nano herunterladen"
+  },
+  "nanoDl": {
+    "message": "Um diese Sätze zu reparieren, muss Gemini Nano heruntergeladen werden (einige GB, nur einmal). Bis dahin bleiben sie in der Originalsprache."
+  },
+  "nanoDownloading": {
+    "message": "Chrome lädt Gemini Nano herunter…"
+  },
+  "nanoReady": {
+    "message": "✓ Gemini Nano ist bereit, kaputte Sätze zu reparieren."
+  },
+  "hybridWhy": {
+    "message": "Empfohlen in $1: Dieser Browser bringt Gemini Nano nicht mit, daher korrigiert Google Gemini die Sätze, die der Chrome-Übersetzer beschädigt. Nur diese Sätze werden gesendet."
+  },
+  "hybridWhyHw": {
+    "message": "Empfohlen auf diesem Computer: Gemini Nano läuft hier nicht, daher korrigiert Google Gemini die Sätze, die der Chrome-Übersetzer beschädigt. Nur diese Sätze werden gesendet."
+  },
+  "hybridInfo": {
+    "message": "Wenn Links oder fett formatierter Text in einem Satz beschädigt sind, korrigiert ihn Gemini: Nur diese Sätze werden gesendet."
+  },
+  "check": {
+    "message": "Prüfen"
+  },
+  "checkAgain": {
+    "message": "Erneut prüfen"
+  },
+  "download": {
+    "message": "Herunterladen"
+  },
+  "seeProgress": {
+    "message": "Fortschritt anzeigen"
+  },
+  "guideTitle": {
+    "message": "Hol dir deinen kostenlosen API-Schlüssel in einer Minute"
+  },
+  "guide1": {
+    "message": "Öffne Google AI Studio und melde dich mit deinem Google-Konto an."
+  },
+  "guideOpen": {
+    "message": "Google AI Studio öffnen"
+  },
+  "guide2": {
+    "message": "Akzeptiere die Bedingungen, falls danach gefragt wird. Siehst du keinen Schlüssel, klicke auf $1."
+  },
+  "guide4": {
+    "message": "Kopiere den Schlüssel und füge ihn unten ein. Das beste Modell zum Übersetzen wählen wir selbst."
+  },
+  "guideNote": {
+    "message": "Keine Kreditkarte nötig. Erreichst du das Minutenlimit, wartet die Übersetzung einige Sekunden und läuft dann von selbst weiter. Google kann nutzen, was du mit einem kostenlosen Schlüssel sendest, um seine Produkte zu verbessern."
+  },
+  "serverAddr": {
+    "message": "Serveradresse"
+  },
+  "serverLmstudio": {
+    "message": "In LM Studio: Developer → Local Server, den Server starten."
+  },
+  "ollamaTitle": {
+    "message": "Ollama verbinden"
+  },
+  "ollamaAllow": {
+    "message": "Erlaube diese Erweiterung. Bis dahin lehnt Ollama sie mit Fehler 403 ab."
+  },
+  "ollamaLinux": {
+    "message": "Öffne unter Linux die Einstellungen des Dienstes:"
+  },
+  "ollamaLinuxPaste": {
+    "message": "Schreib das ganz oben hinein, speichere und starte Ollama neu:"
+  },
+  "ollamaOther": {
+    "message": "Lege unter Windows oder macOS diese Umgebungsvariable an und starte Ollama neu:"
+  },
+  "ollamaPull": {
+    "message": "Lade ein Modell herunter und wähle es unten aus, zum Beispiel:"
+  },
+  "ollamaContext": {
+    "message": "Mit weniger als 24 GB Grafikspeicher liest Ollama nur 4096 Tokens pro Anfrage und schneidet den Rest ohne Hinweis ab. Deshalb werden je 1500 Zeichen gesendet (Erweitert → Geschwindigkeit). Um mehr zu senden, füge $1 unter der Erlaubnis hinzu und starte Ollama neu: Das braucht mehr Grafikspeicher."
+  },
+  "localSlow": {
+    "message": "Modelle auf deinem Computer können langsamer übersetzen als Online-Dienste: Das hängt von deiner Grafikkarte ab. Zum Übersetzen empfehlen wir Gemma 4 12B, das etwa 8 GB Grafikspeicher braucht."
+  },
+  "apiKeyLabel": {
+    "message": "API-Schlüssel"
+  },
+  "keyPh": {
+    "message": "API-Schlüssel hier einfügen…"
+  },
+  "optional": {
+    "message": "Optional"
+  },
+  "keyNote": {
+    "message": "Wird nur in diesem Browser gespeichert und nur an diesen Dienst gesendet."
+  },
+  "model": {
+    "message": "Modell"
+  },
+  "modelHintFmt": {
+    "message": "Modell: $1."
+  },
+  "modelsLoading": {
+    "message": "Suche die Modelle deines Kontos…"
+  },
+  "modelsError": {
+    "message": "Modelle konnten nicht gelesen werden: $1"
+  },
+  "noReply": {
+    "message": "keine Antwort"
+  },
+  "modelsNone": {
+    "message": "Der Dienst hat keine Textmodelle geliefert: Gib den Namen von Hand ein."
+  },
+  "modelsCount": {
+    "message": "$1 von $2"
+  },
+  "modelsTryPart": {
+    "message": "Versuche einen kürzeren Teil des Namens."
+  },
+  "modelsFreeOnly": {
+    "message": "Nur kostenlose"
+  },
+  "modelsForTranslation": {
+    "message": "Zum Übersetzen"
+  },
+  "modelsNoFilterMatch": {
+    "message": "Kein Modell erfüllt die gewählten Filter."
+  },
+  "modelSearchPh": {
+    "message": "Modell suchen…"
+  },
+  "modelSearchAria": {
+    "message": "Modell suchen"
+  },
+  "modelsNoMatch": {
+    "message": "Kein Modell passt zu „$1“."
+  },
+  "chooseModel": {
+    "message": "Modell wählen…"
+  },
+  "keyWorks": {
+    "message": "Der Schlüssel funktioniert"
+  },
+  "connected": {
+    "message": "Verbunden"
+  },
+  "modelsOk": {
+    "message": "✓ $1. Verfügbare Modelle: $2."
+  },
+  "modelsOkPicked": {
+    "message": "✓ $1. Verfügbare Modelle: $2. Wir haben $3 gewählt, das zum Übersetzen empfohlene Modell."
+  },
+  "testBtn": {
+    "message": "Übersetzung testen"
+  },
+  "testing": {
+    "message": "Übersetze einen Testsatz…"
+  },
+  "testFailed": {
+    "message": "Hat nicht funktioniert."
+  },
+  "noService": {
+    "message": "Der Dienst hat nicht geantwortet."
+  },
+  "testOk": {
+    "message": "✓ Test erfolgreich. Modell oder Dienst: $1."
+  },
+  "testMarks": {
+    "message": "Übersetzt, aber $1 hat die Markierungen beschädigt."
+  },
+  "original": {
+    "message": "Original"
+  },
+  "translation": {
+    "message": "Übersetzung"
+  },
+  "signInBtn": {
+    "message": "Schaltfläche „Sign in“"
+  },
+  "empty": {
+    "message": "(leer)"
+  },
+  "marksLost": {
+    "message": "Das Symbol 🛒 oder der Link ging verloren. Sätze, bei denen das passiert, bleiben im Original, damit die Seite nicht kaputtgeht."
+  },
+  "prefs": {
+    "message": "Optionen"
+  },
+  "otherLang": {
+    "message": "Andere Sprache…"
+  },
+  "otherLangAria": {
+    "message": "Andere Sprache"
+  },
+  "otherLangPh": {
+    "message": "Sprache eingeben, zum Beispiel: Català…"
+  },
+  "langHint": {
+    "message": "Steht sie nicht in der Liste, wähle „Andere Sprache“ und gib sie ein."
+  },
+  "langAi": {
+    "message": "Die KI übersetzt in „$1“. Klicke auf Übersetzung testen, um es zu sehen."
+  },
+  "langUnknown": {
+    "message": "„$1“ erkenne ich nicht. Schreib es auf Deutsch oder Englisch, zum Beispiel „Polnisch“."
+  },
+  "langOk": {
+    "message": "✓ Erkannt: $1. Im Feld von $2 siehst du, ob sie verfügbar ist."
+  },
+  "localNeedLang": {
+    "message": "$1 braucht eine Sprache, die es erkennt: Prüfe „Übersetzen in“."
+  },
+  "localNoLang": {
+    "message": "$1 übersetzt nicht in diese Sprache."
+  },
+  "dlChrome": {
+    "message": "Die Sprache muss heruntergeladen werden (einige MB, nur einmal)."
+  },
+  "downloading": {
+    "message": "Chrome lädt es gerade herunter…"
+  },
+  "downloadingPct": {
+    "message": "$1 wird heruntergeladen… $2 %"
+  },
+  "installing": {
+    "message": "$1 wird installiert…"
+  },
+  "localReady": {
+    "message": "✓ $1 ist bereit, in folgende Sprache zu übersetzen: $2."
+  },
+  "stateFmt": {
+    "message": "Status: $1"
+  },
+  "showBadge": {
+    "message": "Anzeige auf der Seite einblenden"
+  },
+  "showBadgeHint": {
+    "message": "Ein Hinweis unten rechts mit dem Fortschritt und einer Schaltfläche für das Original."
+  },
+  "useCache": {
+    "message": "Übersetzungen merken"
+  },
+  "useCacheHint": {
+    "message": "Kehrst du zu einer Seite zurück, wird sie sofort übersetzt und verbraucht dein Limit nicht."
+  },
+  "contextFirst": {
+    "message": "Seite vor dem Übersetzen verstehen"
+  },
+  "contextHint": {
+    "message": "Die KI liest zuerst, worum es auf der Seite geht, um Namen und Begriffe zu respektieren. Das ist eine Anfrage mehr pro Seite."
+  },
+  "uiEnglish": {
+    "message": "Oberfläche auf Englisch"
+  },
+  "uiEnglishHint": {
+    "message": "Zeigt die Erweiterung auf Englisch an, auch wenn der Browser eine andere Sprache verwendet. Name und Tastenkürzel folgen weiterhin der Sprache des Browsers."
+  },
+  "notUsedWith": {
+    "message": "Wird für folgenden Dienst nicht verwendet: $1."
+  },
+  "alwaysSites": {
+    "message": "Auf diesen Websites immer übersetzen"
+  },
+  "neverSites": {
+    "message": "Auf diesen Websites nie übersetzen"
+  },
+  "neverSitesPh": {
+    "message": "meinebank.de"
+  },
+  "sitesHint": {
+    "message": "Eine Website pro Zeile, zum Beispiel $1. Subdomains sind eingeschlossen."
+  },
+  "advanced": {
+    "message": "Erweitert"
+  },
+  "advancedSummary": {
+    "message": "Stilvorgaben, Glossar, auszuschließende Teile, Geschwindigkeit und gespeicherte Übersetzungen."
+  },
+  "styleLabel": {
+    "message": "Stilvorgaben für die KI"
+  },
+  "stylePh": {
+    "message": "Z. B.: Siezen, sachlicher Ton. Produkt- und Seriennamen auf Englisch lassen."
+  },
+  "styleHint": {
+    "message": "Optional. Werden mit dem Chrome-Übersetzer nicht verwendet, da er keine Vorgaben annimmt."
+  },
+  "glossaryLabel": {
+    "message": "Dein Glossar"
+  },
+  "glossaryPh": {
+    "message": "sale = Angebot\nBlack Friday"
+  },
+  "glossaryHint": {
+    "message": "Eine Regel pro Zeile. „X = Y“ übersetzt X immer als Y; nur „X“ lässt es unübersetzt. Ganze Wörter, Groß- oder Kleinschreibung egal. Mit dem Chrome-Übersetzer wird Y unverändert eingesetzt, Artikel und Endungen passen dann eventuell nicht."
+  },
+  "skipLabel": {
+    "message": "Teile der Seite, die nicht übersetzt werden sollen"
+  },
+  "skipPh": {
+    "message": ".preis\n@amazon.com .a-price\n@youtube.com #channel-name"
+  },
+  "skipHint": {
+    "message": "Nur nötig, wenn eine Website etwas übersetzt, das du unverändert lassen willst (Preise, Namen, Benutzernamen). Gib pro Zeile einen CSS-Selektor an; mit $1 davor gilt der Selektor nur für diese Website. Marken, @Benutzernamen, #Hashtags, Adressen, E-Mails, Code und Befehle bleiben bereits automatisch unverändert."
+  },
+  "domainCode": {
+    "message": "@domain"
+  },
+  "speed": {
+    "message": "Geschwindigkeit"
+  },
+  "maxChars": {
+    "message": "Zeichen pro Anfrage"
+  },
+  "concurrency": {
+    "message": "Gleichzeitige Anfragen"
+  },
+  "speedHint": {
+    "message": "Diese Werte passen sich bei der Wahl eines Dienstes automatisch an. Mit LM Studio oder Ollama funktionieren eine Anfrage gleichzeitig und etwa 1500 Zeichen pro Anfrage am besten."
+  },
+  "savedTr": {
+    "message": "Gespeicherte Übersetzungen"
+  },
+  "clearCache": {
+    "message": "Gespeicherte Übersetzungen löschen"
+  },
+  "cleared": {
+    "message": "Erledigt. Gelöscht: $1"
+  },
+  "clearHint": {
+    "message": "Nützlich, wenn du den Dienst gewechselt hast und Seiten neu übersetzt werden sollen."
+  },
+  "save": {
+    "message": "Änderungen speichern"
+  },
+  "unsaved": {
+    "message": "Du hast ungespeicherte Änderungen."
+  },
+  "allSaved": {
+    "message": "Alles ist gespeichert."
+  },
+  "savedMsg": {
+    "message": "Änderungen gespeichert."
+  },
+  "sessionKeys": {
+    "message": "API-Schlüssel beim Schließen des Browsers vergessen"
+  },
+  "sessionKeysHint": {
+    "message": "Sie werden nicht auf diesem Computer gespeichert: Du fügst sie bei jedem Öffnen des Browsers neu ein. Praktisch auf einem gemeinsam genutzten Computer."
+  },
+  "keyLimitGemini": {
+    "message": "Wenn du in Google AI Studio keine Abrechnung aktivierst, kann dieser Schlüssel keine Kosten verursachen, auch wenn jemand anderes ihn bekommt."
+  },
+  "keyLimitOpenrouter": {
+    "message": "Lege in OpenRouter ein Guthabenlimit für diesen Schlüssel fest: Wenn jemand anderes ihn bekommt, kann er nicht mehr ausgeben."
+  },
+  "keyLimitOpenai": {
+    "message": "Lege in der OpenAI-Abrechnung ein Monatsbudget fest und schalte das automatische Aufladen aus: Wenn jemand anderes den Schlüssel bekommt, ist der Schaden begrenzt."
+  },
+  "keyLimitAnthropic": {
+    "message": "Lege in der Anthropic-Abrechnung ein Ausgabenlimit fest und schalte das automatische Aufladen aus: Wenn jemand anderes den Schlüssel bekommt, ist der Schaden begrenzt."
+  },
+  "menuSelection": {
+    "message": "Auswahl übersetzen"
+  },
+  "selClose": {
+    "message": "Schließen"
+  },
+  "selCopy": {
+    "message": "Kopieren"
+  },
+  "selCopied": {
+    "message": "Kopiert"
+  },
+  "selCopyFail": {
+    "message": "Kopieren nicht möglich"
+  },
+  "selListen": {
+    "message": "Anhören"
+  },
+  "selEdit": {
+    "message": "Text bearbeiten"
+  },
+  "selReplace": {
+    "message": "Ersetzen"
+  },
+  "selReplaceStale": {
+    "message": "Der Text im Feld hat sich geändert: Bitte erneut markieren."
+  },
+  "selEditLabel": {
+    "message": "Zu übersetzender Text"
+  },
+  "selTranslating": {
+    "message": "Wird übersetzt…"
+  },
+  "selTooLong": {
+    "message": "Zu viel Text: Wähle bis zu $1 Zeichen aus oder übersetze die ganze Seite."
+  },
+  "selRateLimit": {
+    "message": "API-Limit: Versuche es in $1 s erneut."
+  },
+  "selectionButton": {
+    "message": "Beim Markieren von Text eine Schaltfläche zeigen"
+  },
+  "selectionButtonHint": {
+    "message": "Ein Klick zeigt die Übersetzung der Auswahl. Du kannst auch „Auswahl übersetzen“ im Rechtsklickmenü verwenden."
+  },
+  "groupPaid": {
+    "message": "Übersetzer mit kostenpflichtiger API"
+  },
+  "groupFreePaid": {
+    "message": "Übersetzer mit kostenlosem oder bezahltem Tarif"
+  },
+  "groupLocal": {
+    "message": "Übersetzer auf deinem Computer"
+  },
+  "selListenFail": {
+    "message": "Wiedergabe nicht möglich ($1)."
+  },
+  "recent": {
+    "message": "Zuletzt"
+  },
+  "recentSearch": {
+    "message": "In den letzten suchen…"
+  },
+  "recentEmpty": {
+    "message": "Hier erscheinen die Übersetzungen von markiertem Text (die letzten 20)."
+  },
+  "recentClear": {
+    "message": "Alle löschen"
+  },
+  "recentDelete": {
+    "message": "Löschen"
+  },
+  "recentNoMatch": {
+    "message": "Keine Treffer für diese Suche."
+  },
+  "keepRecent": {
+    "message": "Letzte Übersetzungen behalten"
+  },
+  "keepRecentHint": {
+    "message": "Die letzten 20 Übersetzungen von markiertem Text, um sie im Fenster der Symbolleiste wiederzufinden. Nur auf diesem Computer; beim Ausschalten werden sie gelöscht."
+  },
+  "recentFav": {
+    "message": "Anheften"
+  },
+  "srcAuto": {
+    "message": "automatisch"
+  },
+  "translateFrom": {
+    "message": "Übersetzen aus"
+  }
+}

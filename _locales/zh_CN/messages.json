@@ -1,0 +1,788 @@
+{
+  "extName": {
+    "message": "Translator: Browser, AI & Local"
+  },
+  "extShortName": {
+    "message": "AI Translator"
+  },
+  "extDesc": {
+    "message": "用理解上下文的 AI 翻译网页：代码、命令、标识符和专有名词保持原样。"
+  },
+  "cmdToggle": {
+    "message": "翻译 / 显示原文"
+  },
+  "menuToggle": {
+    "message": "用 AI 翻译页面 / 查看原文"
+  },
+  "svcChromeLabel": {
+    "message": "Chrome 翻译"
+  },
+  "svcChromeDesc": {
+    "message": "Chrome 自带的翻译功能。无需账号：你阅读的内容不会离开你的电脑。"
+  },
+  "svcHybridLabel": {
+    "message": "Chrome 翻译 + Google Gemini"
+  },
+  "svcHybridDesc": {
+    "message": "由你电脑上的 Chrome 翻译进行翻译。只有链接或粗体损坏的句子才会发给 Gemini 修复。"
+  },
+  "svcNoTranslator": {
+    "message": "此浏览器中不可用。Chrome 翻译随 Google Chrome 提供。"
+  },
+  "svcGeminiLabel": {
+    "message": "Google Gemini"
+  },
+  "svcGeminiDesc": {
+    "message": "Google 的 AI 先阅读页面再翻译：理解主题，更好地保留专有名词。全部文本都会发送给 Google。"
+  },
+  "svcAnthropicDesc": {
+    "message": "付费。需要 Anthropic 的 API 密钥。"
+  },
+  "svcOpenaiDesc": {
+    "message": "付费。需要 OpenAI 的 API 密钥。"
+  },
+  "svcOpenrouterDesc": {
+    "message": "一个密钥即可使用数百个模型，其中一些免费。"
+  },
+  "svcLmstudioDesc": {
+    "message": "通过 LM Studio 在你的电脑上运行的模型。"
+  },
+  "svcOllamaDesc": {
+    "message": "通过 Ollama 在你的电脑上运行的模型。"
+  },
+  "svcCustomLabel": {
+    "message": "其他兼容 OpenAI 的服务"
+  },
+  "svcCustomDesc": {
+    "message": "输入服务器地址，如有需要再填写 API 密钥。"
+  },
+  "hintKeyAuto": {
+    "message": "粘贴密钥后会自动选择"
+  },
+  "hintKeyPick": {
+    "message": "粘贴密钥后从列表中选择"
+  },
+  "hintLmstudio": {
+    "message": "使用 LM Studio 中已加载的模型"
+  },
+  "hintOllama": {
+    "message": "从 Ollama 已下载的模型中选择"
+  },
+  "hintCustom": {
+    "message": "模型名称"
+  },
+  "errNanoBrowser": {
+    "message": "Gemini Nano：$1 没有 Chrome 内置的 AI。请使用 Google Chrome，或选择“$2”并使用免费密钥。"
+  },
+  "errNanoOld": {
+    "message": "Gemini Nano：此版本的 Chrome 没有内置 AI。请更新到 Chrome 138 或更高版本。"
+  },
+  "errNanoUnavailable": {
+    "message": "Gemini Nano：Chrome 显示不可用。请查看 chrome://on-device-internals：需要 22 GB 可用空间和显存超过 4 GB 的 GPU（或 16 GB 内存）。 显卡被占用时（其他 AI 模型、游戏、视频剪辑等）也会这样：释放显卡后重启 Chrome。"
+  },
+  "errNanoLang": {
+    "message": "Gemini Nano：不支持该语言（仅支持英语、西班牙语、日语、德语和法语）。"
+  },
+  "errNanoNotDownloaded": {
+    "message": "Gemini Nano：模型尚未下载。请前往 设置 → Chrome 翻译 →“下载 Gemini Nano”。"
+  },
+  "errTrDownload": {
+    "message": "Chrome 翻译：该语言尚未下载。请前往 设置 → Chrome 翻译 →“下载”。"
+  },
+  "errNanoTarget": {
+    "message": "Gemini Nano：无法翻译成“$1”。仅支持英语、西班牙语、日语、德语和法语；其他语言请使用带密钥的 Gemini。"
+  },
+  "errNanoNoReply": {
+    "message": "Gemini Nano：内置 AI 没有响应。"
+  },
+  "errTrBrowser": {
+    "message": "Chrome 翻译：$1 没有此功能。请使用 Google Chrome，或选择“$2”并使用免费密钥。"
+  },
+  "errTrOld": {
+    "message": "Chrome 翻译：此版本的 Chrome 没有此功能。请更新到 Chrome 138 或更高版本。"
+  },
+  "errTrLang": {
+    "message": "Chrome 翻译：无法翻译成该语言。"
+  },
+  "errKey": {
+    "message": "API 密钥无效或没有权限（$1）：$2"
+  },
+  "err404": {
+    "message": "找不到模型或端点（404）：$1"
+  },
+  "errNoBase": {
+    "message": "缺少服务的服务器地址（设置）。"
+  },
+  "errNoKey": {
+    "message": "缺少 API 密钥（设置）。"
+  },
+  "errNoModel": {
+    "message": "缺少模型名称（设置）。"
+  },
+  "errTimeout": {
+    "message": "AI 响应时间过长（超时）。"
+  },
+  "errConnect": {
+    "message": "无法连接到 $1：$2"
+  },
+  "errUnreadable": {
+    "message": "无法读取服务的响应。"
+  },
+  "errEmpty": {
+    "message": "AI 返回了空响应。"
+  },
+  "errNoJson": {
+    "message": "AI 没有返回有效的 JSON。"
+  },
+  "errNoReply": {
+    "message": "扩展程序没有响应"
+  },
+  "onDevice": {
+    "message": "$1（在你的设备上）"
+  },
+  "badgeHide": {
+    "message": "隐藏指示器"
+  },
+  "hide": {
+    "message": "隐藏"
+  },
+  "show": {
+    "message": "显示"
+  },
+  "viewingOriginal": {
+    "message": "正在查看原文"
+  },
+  "translate": {
+    "message": "翻译"
+  },
+  "showOriginal": {
+    "message": "查看原文"
+  },
+  "showTranslation": {
+    "message": "查看译文"
+  },
+  "badgeRateLimit": {
+    "message": "API 限额：$1 秒后继续（$2 / $3）"
+  },
+  "analyzing": {
+    "message": "正在了解页面内容…"
+  },
+  "progress": {
+    "message": "正在翻译… $1 / $2"
+  },
+  "badgeDone": {
+    "message": "已翻译成 $1"
+  },
+  "badgeDoneErrors": {
+    "message": "已翻译成 $1。未翻译：$2"
+  },
+  "settings": {
+    "message": "设置"
+  },
+  "popupNoKey": {
+    "message": "翻译服务尚未设置完成。$1"
+  },
+  "popupNeedLang": {
+    "message": "需要先下载 $1（几 MB，只需一次）。"
+  },
+  "setUp": {
+    "message": "去设置"
+  },
+  "popupUnsupported": {
+    "message": "Chrome 不允许翻译此页面：这是 Chrome 或应用商店的内部页面。"
+  },
+  "languages": {
+    "message": "语言"
+  },
+  "fromSr": {
+    "message": "从 "
+  },
+  "pageLang": {
+    "message": "页面语言"
+  },
+  "translateTo": {
+    "message": "翻译成"
+  },
+  "translatePage": {
+    "message": "翻译此页面"
+  },
+  "popupAlways": {
+    "message": "始终翻译 $1"
+  },
+  "popupAlwaysHint": {
+    "message": "打开此网站的页面时会自动翻译。"
+  },
+  "bilingual": {
+    "message": "同时显示原文和译文"
+  },
+  "bilingualHint": {
+    "message": "段落、标题和列表项保留原文，并在下方显示译文。适合学习语言。"
+  },
+  "thisPage": {
+    "message": "此页面"
+  },
+  "popupUsing": {
+    "message": "使用 $1 · $2"
+  },
+  "change": {
+    "message": "更改"
+  },
+  "errTab": {
+    "message": "无法访问此标签页。请刷新后重试。"
+  },
+  "doneOk": {
+    "message": "✓ 页面已翻译。"
+  },
+  "doneErrors": {
+    "message": "✓ 页面已翻译。保留原文的句子：$1"
+  },
+  "ctxDetected": {
+    "message": "识别的页面：$1"
+  },
+  "ctxKept": {
+    "message": "不翻译：$1"
+  },
+  "optTitle": {
+    "message": "AI 翻译 · 设置"
+  },
+  "theme": {
+    "message": "主题"
+  },
+  "themeAuto": {
+    "message": "自动"
+  },
+  "themeLight": {
+    "message": "浅色"
+  },
+  "themeDark": {
+    "message": "深色"
+  },
+  "donate": {
+    "message": "请我喝杯咖啡"
+  },
+  "intro": {
+    "message": "翻译整个页面，并保留不应翻译的内容：代码、命令、文件名、网址和品牌。"
+  },
+  "sampleFromLang": {
+    "message": "en"
+  },
+  "sampleFromCode": {
+    "message": "EN"
+  },
+  "sampleFromName": {
+    "message": "英语："
+  },
+  "sampleFrom": {
+    "message": "Press $1 to save $2 in your folder."
+  },
+  "sampleToCode": {
+    "message": "ZH"
+  },
+  "sampleToName": {
+    "message": "中文："
+  },
+  "sampleTo": {
+    "message": "按 $1 将 $2 保存到你的文件夹。"
+  },
+  "sampleKey": {
+    "message": "这样标出的内容保持原样。"
+  },
+  "svcTitle": {
+    "message": "你想用什么翻译？"
+  },
+  "svcIntro": {
+    "message": "如果不确定，就保留推荐的选项。之后随时可以更改。"
+  },
+  "moreServices": {
+    "message": "高级：Claude、OpenAI、OpenRouter、Ollama、LM Studio"
+  },
+  "recommended": {
+    "message": "推荐"
+  },
+  "tagFree": {
+    "message": "免费"
+  },
+  "tagVeryFast": {
+    "message": "非常快"
+  },
+  "tagFast": {
+    "message": "快"
+  },
+  "tagOnDevice": {
+    "message": "在你的设备上"
+  },
+  "tagCloud": {
+    "message": "云端"
+  },
+  "tagFreeLimited": {
+    "message": "免费（有限额）"
+  },
+  "tagNeedsKey": {
+    "message": "需要 API 密钥"
+  },
+  "tagPaid": {
+    "message": "付费"
+  },
+  "tagSomeFree": {
+    "message": "部分免费"
+  },
+  "chromeInfo": {
+    "message": "如果某句的链接或粗体被打乱，会由 Gemini Nano 修正：这是只有 Google Chrome 才带的 AI。"
+  },
+  "chromeInfoNoNano": {
+    "message": "此浏览器没有 Gemini Nano（只有 Google Chrome 才有），因此链接或粗体被打乱的句子会保留原文。如需由 AI 修正，请选择“$1”。"
+  },
+  "chromeInfoNoNanoHw": {
+    "message": "Gemini Nano 无法在这台电脑上运行（需要超过 4 GB 显存或 16 GB 内存，以及 22 GB 可用磁盘空间），因此链接或粗体被打乱的句子会保留原文。如需由 AI 修正，请选择“$1”。 显卡被占用时（其他 AI 模型、游戏、视频剪辑等）也会这样：释放显卡后重启 Chrome。"
+  },
+  "downloadNano": {
+    "message": "下载 Gemini Nano"
+  },
+  "nanoDl": {
+    "message": "要修复这些句子，需要下载 Gemini Nano（几 GB，只需一次）。在此之前，它们保持原文。"
+  },
+  "nanoDownloading": {
+    "message": "Chrome 正在下载 Gemini Nano…"
+  },
+  "nanoReady": {
+    "message": "✓ Gemini Nano 已可以修复损坏的句子。"
+  },
+  "hybridWhy": {
+    "message": "在 $1 中推荐：此浏览器没有 Gemini Nano，因此由 Google Gemini 修正 Chrome 翻译打乱的句子。只会发送这些句子。"
+  },
+  "hybridWhyHw": {
+    "message": "在这台电脑上推荐：Gemini Nano 无法在这里运行，因此由 Google Gemini 修正 Chrome 翻译打乱的句子。只会发送这些句子。"
+  },
+  "hybridInfo": {
+    "message": "如果某句的链接或粗体被打乱，会由 Gemini 修复：只发送这些句子。"
+  },
+  "check": {
+    "message": "检查"
+  },
+  "checkAgain": {
+    "message": "重新检查"
+  },
+  "download": {
+    "message": "下载"
+  },
+  "seeProgress": {
+    "message": "查看进度"
+  },
+  "guideTitle": {
+    "message": "一分钟获取免费 API 密钥"
+  },
+  "guide1": {
+    "message": "打开 Google AI Studio，并用你的 Google 账号登录。"
+  },
+  "guideOpen": {
+    "message": "打开 Google AI Studio"
+  },
+  "guide2": {
+    "message": "如有提示，请接受条款。如果看不到密钥，请点击 $1。"
+  },
+  "guide4": {
+    "message": "复制密钥并粘贴到下方。我们会自动选择最适合翻译的模型。"
+  },
+  "guideNote": {
+    "message": "无需信用卡。达到每分钟限额时，翻译会等待几秒再自动继续。Google 可能会使用你通过免费密钥发送的内容来改进其产品。"
+  },
+  "serverAddr": {
+    "message": "服务器地址"
+  },
+  "serverLmstudio": {
+    "message": "在 LM Studio 中：Developer → Local Server，启动服务器。"
+  },
+  "ollamaTitle": {
+    "message": "连接 Ollama"
+  },
+  "ollamaAllow": {
+    "message": "授权此扩展。在此之前，Ollama 会以错误 403 拒绝它。"
+  },
+  "ollamaLinux": {
+    "message": "在 Linux 上，打开服务的配置："
+  },
+  "ollamaLinuxPaste": {
+    "message": "在最上方写入以下内容，保存并重启 Ollama："
+  },
+  "ollamaOther": {
+    "message": "在 Windows 或 macOS 上，创建此环境变量并重启 Ollama："
+  },
+  "ollamaPull": {
+    "message": "下载一个模型并在下方选择，例如："
+  },
+  "ollamaContext": {
+    "message": "显存少于 24 GB 时，Ollama 每次请求只读取 4096 个 token，其余部分会被直接截掉，不会提示。因此每次发送 1500 个字符（高级 → 速度）。如需发送更多，请在授权下方添加 $1 并重启 Ollama：会占用更多显存。"
+  },
+  "localSlow": {
+    "message": "电脑上的模型翻译可能比在线服务慢，取决于你的显卡。翻译推荐使用 Gemma 4 12B，它需要约 8 GB 显存。"
+  },
+  "apiKeyLabel": {
+    "message": "API 密钥"
+  },
+  "keyPh": {
+    "message": "在此粘贴你的 API 密钥…"
+  },
+  "optional": {
+    "message": "可选"
+  },
+  "keyNote": {
+    "message": "仅保存在此浏览器中，且只发送给此服务。"
+  },
+  "model": {
+    "message": "模型"
+  },
+  "modelHintFmt": {
+    "message": "模型：$1。"
+  },
+  "modelsLoading": {
+    "message": "正在查找你账号中的模型…"
+  },
+  "modelsError": {
+    "message": "无法读取模型：$1"
+  },
+  "noReply": {
+    "message": "无响应"
+  },
+  "modelsNone": {
+    "message": "该服务没有返回文本模型：请手动输入名称。"
+  },
+  "modelsCount": {
+    "message": "共 $2 个，显示 $1 个"
+  },
+  "modelsTryPart": {
+    "message": "试试只输入名称的一部分。"
+  },
+  "modelsFreeOnly": {
+    "message": "仅免费"
+  },
+  "modelsForTranslation": {
+    "message": "适合翻译"
+  },
+  "modelsNoFilterMatch": {
+    "message": "没有符合所选筛选条件的模型。"
+  },
+  "modelSearchPh": {
+    "message": "搜索模型…"
+  },
+  "modelSearchAria": {
+    "message": "搜索模型"
+  },
+  "modelsNoMatch": {
+    "message": "没有与“$1”匹配的模型。"
+  },
+  "chooseModel": {
+    "message": "选择模型…"
+  },
+  "keyWorks": {
+    "message": "密钥有效"
+  },
+  "connected": {
+    "message": "已连接"
+  },
+  "modelsOk": {
+    "message": "✓ $1。可用模型：$2。"
+  },
+  "modelsOkPicked": {
+    "message": "✓ $1。可用模型：$2。已选择 $3，这是推荐的翻译模型。"
+  },
+  "testBtn": {
+    "message": "测试翻译"
+  },
+  "testing": {
+    "message": "正在翻译测试句子…"
+  },
+  "testFailed": {
+    "message": "没有成功。"
+  },
+  "noService": {
+    "message": "服务没有响应。"
+  },
+  "testOk": {
+    "message": "✓ 可以使用 $1。"
+  },
+  "testMarks": {
+    "message": "可以翻译，但 $1 破坏了标记。"
+  },
+  "original": {
+    "message": "原文"
+  },
+  "translation": {
+    "message": "译文"
+  },
+  "signInBtn": {
+    "message": "“Sign in”按钮"
+  },
+  "empty": {
+    "message": "（空）"
+  },
+  "marksLost": {
+    "message": "🛒 图标或链接丢失了。出现这种情况的句子将保留原文，以免破坏页面。"
+  },
+  "prefs": {
+    "message": "偏好设置"
+  },
+  "otherLang": {
+    "message": "其他语言…"
+  },
+  "otherLangAria": {
+    "message": "其他语言"
+  },
+  "otherLangPh": {
+    "message": "输入语言，例如：Català…"
+  },
+  "langHint": {
+    "message": "如果不在列表中，请选择“其他语言”并输入。"
+  },
+  "langAi": {
+    "message": "AI 将翻译成“$1”。点击“测试翻译”查看效果。"
+  },
+  "langUnknown": {
+    "message": "无法识别“$1”。请用中文或英文输入，例如“波兰语”。"
+  },
+  "langOk": {
+    "message": "✓ 已识别：$1。可在 $2 的框中查看是否可用。"
+  },
+  "localNeedLang": {
+    "message": "$1 需要可识别的语言：请检查“翻译成”。"
+  },
+  "localNoLang": {
+    "message": "$1 无法翻译成该语言。"
+  },
+  "dlChrome": {
+    "message": "需要下载语言包（几 MB，只需一次）。"
+  },
+  "downloading": {
+    "message": "Chrome 正在下载…"
+  },
+  "downloadingPct": {
+    "message": "正在下载 $1… $2%"
+  },
+  "installing": {
+    "message": "正在安装 $1…"
+  },
+  "localReady": {
+    "message": "✓ $1 已准备好将内容翻译成 $2。"
+  },
+  "stateFmt": {
+    "message": "状态：$1"
+  },
+  "showBadge": {
+    "message": "在页面上显示指示器"
+  },
+  "showBadgeHint": {
+    "message": "右下角的小提示，显示进度并提供查看原文的按钮。"
+  },
+  "useCache": {
+    "message": "记住译文"
+  },
+  "useCacheHint": {
+    "message": "再次打开页面时会立即翻译，不占用你的限额。"
+  },
+  "contextFirst": {
+    "message": "翻译前先理解页面"
+  },
+  "contextHint": {
+    "message": "AI 会先了解页面内容，以正确处理名称和术语。每个页面会多一次请求。"
+  },
+  "uiEnglish": {
+    "message": "界面使用英语"
+  },
+  "uiEnglishHint": {
+    "message": "即使浏览器使用其他语言，也以英语显示本扩展。名称和键盘快捷键仍跟随浏览器语言。"
+  },
+  "notUsedWith": {
+    "message": "不适用于 $1。"
+  },
+  "alwaysSites": {
+    "message": "在这些网站上始终翻译"
+  },
+  "neverSites": {
+    "message": "在这些网站上从不翻译"
+  },
+  "neverSitesPh": {
+    "message": "mybank.cn"
+  },
+  "sitesHint": {
+    "message": "每行一个网站，例如 $1。包括其子域名。"
+  },
+  "advanced": {
+    "message": "高级"
+  },
+  "advancedSummary": {
+    "message": "风格要求、术语表、排除的部分、速度和已保存的译文。"
+  },
+  "styleLabel": {
+    "message": "给 AI 的风格要求"
+  },
+  "stylePh": {
+    "message": "例如：使用简体中文，语气自然。产品名和剧名保留英文。"
+  },
+  "styleHint": {
+    "message": "可选。Chrome 翻译不支持风格要求，因此不会使用这些内容。"
+  },
+  "glossaryLabel": {
+    "message": "你的术语表"
+  },
+  "glossaryPh": {
+    "message": "sale = 促销\nBlack Friday"
+  },
+  "glossaryHint": {
+    "message": "每行一条规则。“X = Y”表示 X 总是译为 Y；只写“X”则不翻译。按完整单词匹配，不区分大小写。使用 Chrome 翻译时，Y 会原样插入，前后语句可能不够通顺。"
+  },
+  "skipLabel": {
+    "message": "页面中不想翻译的部分"
+  },
+  "skipPh": {
+    "message": ".price\n@amazon.com .a-price\n@youtube.com #channel-name"
+  },
+  "skipHint": {
+    "message": "仅当网站翻译了你想保留原样的内容（价格、名称、用户名）时才需要。用 CSS 选择器指定，每行一个；前面加上 $1 则只对该网站生效。品牌、@用户、#话题、网址、邮箱、代码和命令已会自动保留。"
+  },
+  "domainCode": {
+    "message": "@域名"
+  },
+  "speed": {
+    "message": "速度"
+  },
+  "maxChars": {
+    "message": "每次发送的字符数"
+  },
+  "concurrency": {
+    "message": "同时发送数"
+  },
+  "speedHint": {
+    "message": "选择服务时会自动调整。使用 LM Studio 或 Ollama 时，建议同时只发送 1 个请求，每个请求约 1500 个字符。"
+  },
+  "savedTr": {
+    "message": "已保存的译文"
+  },
+  "clearCache": {
+    "message": "删除已保存的译文"
+  },
+  "cleared": {
+    "message": "完成。已删除：$1"
+  },
+  "clearHint": {
+    "message": "如果你更换了服务并希望重新翻译页面，这会很有用。"
+  },
+  "save": {
+    "message": "保存更改"
+  },
+  "unsaved": {
+    "message": "你有未保存的更改。"
+  },
+  "allSaved": {
+    "message": "已全部保存。"
+  },
+  "savedMsg": {
+    "message": "更改已保存。"
+  },
+  "sessionKeys": {
+    "message": "关闭浏览器时清除 API 密钥"
+  },
+  "sessionKeysHint": {
+    "message": "不会保存在这台电脑上：每次打开浏览器都需要重新粘贴。适合共用的电脑。"
+  },
+  "keyLimitGemini": {
+    "message": "只要不在 Google AI Studio 中开通结算，即使别人拿到这个密钥，也不会产生费用。"
+  },
+  "keyLimitOpenrouter": {
+    "message": "在 OpenRouter 中为这个密钥设置额度上限：即使别人拿到它，也无法花得更多。"
+  },
+  "keyLimitOpenai": {
+    "message": "在 OpenAI 的结算设置中设定每月预算并关闭自动充值：即使别人拿到密钥，损失也有上限。"
+  },
+  "keyLimitAnthropic": {
+    "message": "在 Anthropic 的结算设置中设定支出上限并关闭自动充值：即使别人拿到密钥，损失也有上限。"
+  },
+  "menuSelection": {
+    "message": "翻译所选内容"
+  },
+  "selClose": {
+    "message": "关闭"
+  },
+  "selCopy": {
+    "message": "复制"
+  },
+  "selCopied": {
+    "message": "已复制"
+  },
+  "selCopyFail": {
+    "message": "无法复制"
+  },
+  "selListen": {
+    "message": "朗读"
+  },
+  "selEdit": {
+    "message": "编辑文本"
+  },
+  "selReplace": {
+    "message": "替换"
+  },
+  "selReplaceStale": {
+    "message": "输入框中的文字已更改，请重新选择。"
+  },
+  "selEditLabel": {
+    "message": "要翻译的文本"
+  },
+  "selTranslating": {
+    "message": "正在翻译…"
+  },
+  "selTooLong": {
+    "message": "文字太多：最多选择 $1 个字符，或翻译整个页面。"
+  },
+  "selRateLimit": {
+    "message": "API 限额：请在 $1 秒后重试。"
+  },
+  "selectionButton": {
+    "message": "选中文字时显示按钮"
+  },
+  "selectionButtonHint": {
+    "message": "点击即可查看所选内容的翻译。也可以使用右键菜单中的“翻译所选内容”。"
+  },
+  "groupPaid": {
+    "message": "付费 API 翻译"
+  },
+  "groupFreePaid": {
+    "message": "免费或付费套餐翻译"
+  },
+  "groupLocal": {
+    "message": "在你电脑上运行的翻译"
+  },
+  "selListenFail": {
+    "message": "无法播放 ($1)。"
+  },
+  "recent": {
+    "message": "最近的翻译"
+  },
+  "recentSearch": {
+    "message": "搜索最近的翻译…"
+  },
+  "recentEmpty": {
+    "message": "你选中文本的翻译会显示在这里（最近 20 条）。"
+  },
+  "recentClear": {
+    "message": "全部删除"
+  },
+  "recentDelete": {
+    "message": "删除"
+  },
+  "recentNoMatch": {
+    "message": "没有匹配的结果。"
+  },
+  "keepRecent": {
+    "message": "保存最近的翻译"
+  },
+  "keepRecentHint": {
+    "message": "保存最近 20 条选中文本的翻译，可在工具栏弹窗中再次查看。只保存在这台电脑上；关闭后会被删除。"
+  },
+  "recentFav": {
+    "message": "固定"
+  },
+  "srcAuto": {
+    "message": "自动"
+  },
+  "translateFrom": {
+    "message": "翻译自"
+  }
+}

@@ -1,0 +1,788 @@
+{
+  "extName": {
+    "message": "Translator: Browser, AI & Local"
+  },
+  "extShortName": {
+    "message": "AI Translator"
+  },
+  "extDesc": {
+    "message": "文脈を理解するAIでウェブページを翻訳。コード、コマンド、識別子、固有名詞はそのまま残します。"
+  },
+  "cmdToggle": {
+    "message": "翻訳 / 原文を表示"
+  },
+  "menuToggle": {
+    "message": "AIでページを翻訳 / 原文を表示"
+  },
+  "svcChromeLabel": {
+    "message": "Chrome 翻訳"
+  },
+  "svcChromeDesc": {
+    "message": "Chrome に組み込まれた翻訳機能。アカウント不要で、読んでいる内容はパソコンの外に出ません。"
+  },
+  "svcHybridLabel": {
+    "message": "Chrome 翻訳 + Google Gemini"
+  },
+  "svcHybridDesc": {
+    "message": "翻訳するのはパソコン上の Chrome 翻訳です。リンクや太字が崩れた文だけを Gemini に送って直します。"
+  },
+  "svcNoTranslator": {
+    "message": "このブラウザでは使えません。Chrome 翻訳は Google Chrome に含まれています。"
+  },
+  "svcGeminiLabel": {
+    "message": "Google Gemini"
+  },
+  "svcGeminiDesc": {
+    "message": "Google の AI がページを読んでから翻訳します。話題を理解し、固有名詞をよりよく保ちます。テキストはすべて Google に送られます。"
+  },
+  "svcAnthropicDesc": {
+    "message": "有料。Anthropic の API キーが必要です。"
+  },
+  "svcOpenaiDesc": {
+    "message": "有料。OpenAI の API キーが必要です。"
+  },
+  "svcOpenrouterDesc": {
+    "message": "1つのキーで数百のモデルを利用可能。一部は無料です。"
+  },
+  "svcLmstudioDesc": {
+    "message": "LM Studio を使ってパソコン上で動くモデル。"
+  },
+  "svcOllamaDesc": {
+    "message": "Ollama を使ってパソコン上で動くモデル。"
+  },
+  "svcCustomLabel": {
+    "message": "その他の OpenAI 互換サービス"
+  },
+  "svcCustomDesc": {
+    "message": "サーバーのアドレスと、必要なら API キーを入力してください。"
+  },
+  "hintKeyAuto": {
+    "message": "キーを貼り付けると自動で選ばれます"
+  },
+  "hintKeyPick": {
+    "message": "キーを貼り付けて一覧から選んでください"
+  },
+  "hintLmstudio": {
+    "message": "LM Studio で読み込んだモデルが使われます"
+  },
+  "hintOllama": {
+    "message": "Ollama でダウンロードしたモデルから選んでください"
+  },
+  "hintCustom": {
+    "message": "モデル名"
+  },
+  "errNanoBrowser": {
+    "message": "Gemini Nano: $1 には Chrome の組み込みAIがありません。Google Chrome を使うか、無料キーで「$2」を選んでください。"
+  },
+  "errNanoOld": {
+    "message": "Gemini Nano: このバージョンの Chrome には組み込みAIがありません。Chrome 138 以降に更新してください。"
+  },
+  "errNanoUnavailable": {
+    "message": "Gemini Nano: Chrome によると利用できません。chrome://on-device-internals を確認してください。22 GB の空き容量と、4 GB を超える VRAM の GPU（または 16 GB の RAM）が必要です。 グラフィックカードが使用中のとき（別の AI モデル、ゲーム、動画編集など）にも起こります。空けてから Chrome を再起動してください。"
+  },
+  "errNanoLang": {
+    "message": "Gemini Nano: その言語には対応していません（英語、スペイン語、日本語、ドイツ語、フランス語のみ）。"
+  },
+  "errNanoNotDownloaded": {
+    "message": "Gemini Nano：モデルがまだダウンロードされていません。設定 → Chrome 翻訳 →「Gemini Nano をダウンロード」を開いてください。"
+  },
+  "errTrDownload": {
+    "message": "Chrome 翻訳: この言語はまだダウンロードされていません。設定 → Chrome 翻訳 →「ダウンロード」を押してください。"
+  },
+  "errNanoTarget": {
+    "message": "Gemini Nano: 「$1」には翻訳できません。英語、スペイン語、日本語、ドイツ語、フランス語のみです。ほかの言語はキー付きの Gemini を使ってください。"
+  },
+  "errNanoNoReply": {
+    "message": "Gemini Nano: 組み込み AI が応答しませんでした。"
+  },
+  "errTrBrowser": {
+    "message": "Chrome 翻訳: $1 には搭載されていません。Google Chrome を使うか、無料キーで「$2」を選んでください。"
+  },
+  "errTrOld": {
+    "message": "Chrome 翻訳: このバージョンの Chrome には搭載されていません。Chrome 138 以降に更新してください。"
+  },
+  "errTrLang": {
+    "message": "Chrome 翻訳: その言語には翻訳できません。"
+  },
+  "errKey": {
+    "message": "API キーが無効か、権限がありません（$1）: $2"
+  },
+  "err404": {
+    "message": "モデルまたはエンドポイントが見つかりません（404）: $1"
+  },
+  "errNoBase": {
+    "message": "サービスのサーバーアドレスがありません（設定）。"
+  },
+  "errNoKey": {
+    "message": "API キーがありません（設定）。"
+  },
+  "errNoModel": {
+    "message": "モデル名がありません（設定）。"
+  },
+  "errTimeout": {
+    "message": "AIの応答に時間がかかりすぎました（タイムアウト）。"
+  },
+  "errConnect": {
+    "message": "$1 に接続できませんでした: $2"
+  },
+  "errUnreadable": {
+    "message": "サービスの応答を読み取れません。"
+  },
+  "errEmpty": {
+    "message": "AIが空の応答を返しました。"
+  },
+  "errNoJson": {
+    "message": "AIが有効な JSON を返しませんでした。"
+  },
+  "errNoReply": {
+    "message": "拡張機能から応答がありません"
+  },
+  "onDevice": {
+    "message": "$1（お使いのデバイス上）"
+  },
+  "badgeHide": {
+    "message": "インジケーターを隠す"
+  },
+  "hide": {
+    "message": "隠す"
+  },
+  "show": {
+    "message": "表示"
+  },
+  "viewingOriginal": {
+    "message": "原文を表示中"
+  },
+  "translate": {
+    "message": "翻訳"
+  },
+  "showOriginal": {
+    "message": "原文を表示"
+  },
+  "showTranslation": {
+    "message": "翻訳を表示"
+  },
+  "badgeRateLimit": {
+    "message": "API の上限: $1 秒後に再開（$2 / $3）"
+  },
+  "analyzing": {
+    "message": "ページの内容を読み取っています…"
+  },
+  "progress": {
+    "message": "翻訳中… $1 / $2"
+  },
+  "badgeDone": {
+    "message": "$1 に翻訳しました"
+  },
+  "badgeDoneErrors": {
+    "message": "$1 に翻訳しました。未翻訳: $2"
+  },
+  "settings": {
+    "message": "設定"
+  },
+  "popupNoKey": {
+    "message": "翻訳サービスの設定がまだ終わっていません。$1"
+  },
+  "popupNeedLang": {
+    "message": "先に $1 をダウンロードする必要があります（数 MB、一度だけ）。"
+  },
+  "setUp": {
+    "message": "設定する"
+  },
+  "popupUnsupported": {
+    "message": "このページは Chrome の内部ページまたはウェブストアのため、翻訳できません。"
+  },
+  "languages": {
+    "message": "言語"
+  },
+  "fromSr": {
+    "message": "翻訳元: "
+  },
+  "pageLang": {
+    "message": "ページの言語"
+  },
+  "translateTo": {
+    "message": "翻訳先"
+  },
+  "translatePage": {
+    "message": "このページを翻訳"
+  },
+  "popupAlways": {
+    "message": "$1 では常に翻訳"
+  },
+  "popupAlwaysHint": {
+    "message": "このサイトのページは開いたときに自動で翻訳されます。"
+  },
+  "bilingual": {
+    "message": "原文と翻訳を並べて表示"
+  },
+  "bilingualHint": {
+    "message": "段落・見出し・リスト項目は原文を残し、その下に翻訳を表示します。語学学習に便利です。"
+  },
+  "thisPage": {
+    "message": "このページ"
+  },
+  "popupUsing": {
+    "message": "使用中: $1 · $2"
+  },
+  "change": {
+    "message": "変更"
+  },
+  "errTab": {
+    "message": "このタブにアクセスできませんでした。再読み込みしてもう一度お試しください。"
+  },
+  "doneOk": {
+    "message": "✓ ページを翻訳しました。"
+  },
+  "doneErrors": {
+    "message": "✓ ページを翻訳しました。原文のまま残った文: $1"
+  },
+  "ctxDetected": {
+    "message": "検出したページ: $1"
+  },
+  "ctxKept": {
+    "message": "翻訳しない語: $1"
+  },
+  "optTitle": {
+    "message": "AI翻訳 · 設定"
+  },
+  "theme": {
+    "message": "テーマ"
+  },
+  "themeAuto": {
+    "message": "自動"
+  },
+  "themeLight": {
+    "message": "ライト"
+  },
+  "themeDark": {
+    "message": "ダーク"
+  },
+  "donate": {
+    "message": "コーヒーをおごる"
+  },
+  "intro": {
+    "message": "ページ全体を翻訳し、翻訳すべきでないもの（コード、コマンド、ファイル名、アドレス、ブランド名）はそのまま残します。"
+  },
+  "sampleFromLang": {
+    "message": "en"
+  },
+  "sampleFromCode": {
+    "message": "EN"
+  },
+  "sampleFromName": {
+    "message": "英語:"
+  },
+  "sampleFrom": {
+    "message": "Press $1 to save $2 in your folder."
+  },
+  "sampleToCode": {
+    "message": "JA"
+  },
+  "sampleToName": {
+    "message": "日本語:"
+  },
+  "sampleTo": {
+    "message": "$1 を押して $2 をフォルダに保存します。"
+  },
+  "sampleKey": {
+    "message": "このように示した部分はそのまま残ります。"
+  },
+  "svcTitle": {
+    "message": "何で翻訳しますか？"
+  },
+  "svcIntro": {
+    "message": "迷ったらおすすめのままにしてください。いつでも変更できます。"
+  },
+  "moreServices": {
+    "message": "詳細: Claude、OpenAI、OpenRouter、Ollama、LM Studio"
+  },
+  "recommended": {
+    "message": "おすすめ"
+  },
+  "tagFree": {
+    "message": "無料"
+  },
+  "tagVeryFast": {
+    "message": "とても速い"
+  },
+  "tagFast": {
+    "message": "速い"
+  },
+  "tagOnDevice": {
+    "message": "デバイス上"
+  },
+  "tagCloud": {
+    "message": "クラウド"
+  },
+  "tagFreeLimited": {
+    "message": "無料（上限あり）"
+  },
+  "tagNeedsKey": {
+    "message": "API キーが必要"
+  },
+  "tagPaid": {
+    "message": "有料"
+  },
+  "tagSomeFree": {
+    "message": "一部無料"
+  },
+  "chromeInfo": {
+    "message": "リンクや太字が崩れた文は Gemini Nano が直します。Google Chrome にだけ入っている AI です。"
+  },
+  "chromeInfoNoNano": {
+    "message": "このブラウザには Gemini Nano がない（Google Chrome にだけあります）ため、リンクや太字が崩れた文は元の言語のまま残ります。AI に直させるには「$1」を選んでください。"
+  },
+  "chromeInfoNoNanoHw": {
+    "message": "このパソコンでは Gemini Nano が動きません（4 GB を超えるグラフィックメモリか 16 GB の RAM と、22 GB の空き容量が必要です）。そのため、リンクや太字が崩れた文は元の言語のまま残ります。AI に直させるには「$1」を選んでください。 グラフィックカードが使用中のとき（別の AI モデル、ゲーム、動画編集など）にも起こります。空けてから Chrome を再起動してください。"
+  },
+  "downloadNano": {
+    "message": "Gemini Nano をダウンロード"
+  },
+  "nanoDl": {
+    "message": "それらの文を直すには Gemini Nano のダウンロードが必要です（数 GB、1 回だけ）。それまでは元の言語のまま残ります。"
+  },
+  "nanoDownloading": {
+    "message": "Chrome が Gemini Nano をダウンロードしています…"
+  },
+  "nanoReady": {
+    "message": "✓ Gemini Nano で崩れた文を直せるようになりました。"
+  },
+  "hybridWhy": {
+    "message": "$1 でのおすすめ：このブラウザには Gemini Nano がないため、Chrome 翻訳が崩した文は Google Gemini が直します。送るのはその文だけです。"
+  },
+  "hybridWhyHw": {
+    "message": "このパソコンでのおすすめ：ここでは Gemini Nano が動かないため、Chrome 翻訳が崩した文は Google Gemini が直します。送るのはその文だけです。"
+  },
+  "hybridInfo": {
+    "message": "リンクや太字が崩れた文は Gemini が直します。送信されるのはその文だけです。"
+  },
+  "check": {
+    "message": "確認"
+  },
+  "checkAgain": {
+    "message": "もう一度確認"
+  },
+  "download": {
+    "message": "ダウンロード"
+  },
+  "seeProgress": {
+    "message": "進行状況を表示"
+  },
+  "guideTitle": {
+    "message": "無料の API キーを1分で取得"
+  },
+  "guide1": {
+    "message": "Google AI Studio を開き、Google アカウントでログインします。"
+  },
+  "guideOpen": {
+    "message": "Google AI Studio を開く"
+  },
+  "guide2": {
+    "message": "求められたら利用規約に同意します。キーが見当たらなければ $1 を押します。"
+  },
+  "guide4": {
+    "message": "キーをコピーして下に貼り付けます。翻訳に最適なモデルはこちらで選びます。"
+  },
+  "guideNote": {
+    "message": "カードは不要です。1分あたりの上限に達すると、数秒待ってから自動で再開します。無料キーで送った内容は、Google が製品改善に使うことがあります。"
+  },
+  "serverAddr": {
+    "message": "サーバーのアドレス"
+  },
+  "serverLmstudio": {
+    "message": "LM Studio で Developer → Local Server を開き、サーバーを起動します。"
+  },
+  "ollamaTitle": {
+    "message": "Ollama を接続する"
+  },
+  "ollamaAllow": {
+    "message": "この拡張機能を許可します。許可するまで、Ollama はエラー 403 で拒否します。"
+  },
+  "ollamaLinux": {
+    "message": "Linux では、サービスの設定を開きます:"
+  },
+  "ollamaLinuxPaste": {
+    "message": "一番上にこれを書いて保存し、Ollama を再起動します:"
+  },
+  "ollamaOther": {
+    "message": "Windows または macOS では、この環境変数を作成して Ollama を再起動します:"
+  },
+  "ollamaPull": {
+    "message": "モデルをダウンロードして、下で選びます。例:"
+  },
+  "ollamaContext": {
+    "message": "グラフィックメモリが 24 GB 未満の場合、Ollama は 1 回のリクエストで 4096 トークンしか読まず、残りを知らせずに切り捨てます。そのため、一度に 1500 文字ずつ送信します（詳細設定 → 速度）。もっと送るには、許可の下に $1 を追加して Ollama を再起動します。グラフィックメモリの使用量が増えます。"
+  },
+  "localSlow": {
+    "message": "パソコン上のモデルは、オンラインのサービスより翻訳が遅くなることがあります。速さはグラフィックカードによって変わります。翻訳には Gemma 4 12B をおすすめします。グラフィックメモリが約 8 GB 必要です。"
+  },
+  "apiKeyLabel": {
+    "message": "API キー"
+  },
+  "keyPh": {
+    "message": "ここに API キーを貼り付け…"
+  },
+  "optional": {
+    "message": "任意"
+  },
+  "keyNote": {
+    "message": "このブラウザにのみ保存され、このサービスにのみ送信されます。"
+  },
+  "model": {
+    "message": "モデル"
+  },
+  "modelHintFmt": {
+    "message": "モデル: $1。"
+  },
+  "modelsLoading": {
+    "message": "アカウントのモデルを探しています…"
+  },
+  "modelsError": {
+    "message": "モデルを読み込めませんでした: $1"
+  },
+  "noReply": {
+    "message": "応答なし"
+  },
+  "modelsNone": {
+    "message": "テキスト用のモデルが返されませんでした。名前を手で入力してください。"
+  },
+  "modelsCount": {
+    "message": "$2 件中 $1 件"
+  },
+  "modelsTryPart": {
+    "message": "名前の一部だけで検索してみてください。"
+  },
+  "modelsFreeOnly": {
+    "message": "無料のみ"
+  },
+  "modelsForTranslation": {
+    "message": "翻訳向け"
+  },
+  "modelsNoFilterMatch": {
+    "message": "選んだ条件に合うモデルはありません。"
+  },
+  "modelSearchPh": {
+    "message": "モデルを検索…"
+  },
+  "modelSearchAria": {
+    "message": "モデルを検索"
+  },
+  "modelsNoMatch": {
+    "message": "「$1」に一致するモデルはありません。"
+  },
+  "chooseModel": {
+    "message": "モデルを選択…"
+  },
+  "keyWorks": {
+    "message": "キーは有効です"
+  },
+  "connected": {
+    "message": "接続しました"
+  },
+  "modelsOk": {
+    "message": "✓ $1。利用できるモデル: $2。"
+  },
+  "modelsOkPicked": {
+    "message": "✓ $1。利用できるモデル: $2。翻訳におすすめの $3 を選びました。"
+  },
+  "testBtn": {
+    "message": "翻訳をテスト"
+  },
+  "testing": {
+    "message": "テスト用の文を翻訳しています…"
+  },
+  "testFailed": {
+    "message": "うまくいきませんでした。"
+  },
+  "noService": {
+    "message": "サービスが応答しませんでした。"
+  },
+  "testOk": {
+    "message": "✓ $1 で動作します。"
+  },
+  "testMarks": {
+    "message": "翻訳はできますが、$1 によってマーカーが壊れました。"
+  },
+  "original": {
+    "message": "原文"
+  },
+  "translation": {
+    "message": "翻訳"
+  },
+  "signInBtn": {
+    "message": "「Sign in」ボタン"
+  },
+  "empty": {
+    "message": "（空）"
+  },
+  "marksLost": {
+    "message": "🛒 アイコンまたはリンクが失われました。こうなった文はページを壊さないよう原文のまま残します。"
+  },
+  "prefs": {
+    "message": "表示と動作"
+  },
+  "otherLang": {
+    "message": "その他の言語…"
+  },
+  "otherLangAria": {
+    "message": "その他の言語"
+  },
+  "otherLangPh": {
+    "message": "言語名を入力（例: Català）…"
+  },
+  "langHint": {
+    "message": "一覧にない場合は「その他の言語」を選んで入力してください。"
+  },
+  "langAi": {
+    "message": "AIは「$1」に翻訳します。「翻訳をテスト」で確認できます。"
+  },
+  "langUnknown": {
+    "message": "「$1」を認識できません。日本語か英語で入力してください（例: 「ポーランド語」）。"
+  },
+  "langOk": {
+    "message": "✓ 認識しました: $1。利用できるかは $2 の欄で確認できます。"
+  },
+  "localNeedLang": {
+    "message": "$1 には認識できる言語が必要です。「翻訳先」を確認してください。"
+  },
+  "localNoLang": {
+    "message": "$1 はその言語に翻訳できません。"
+  },
+  "dlChrome": {
+    "message": "言語のダウンロードが必要です（数 MB、一度だけ）。"
+  },
+  "downloading": {
+    "message": "Chrome がダウンロードしています…"
+  },
+  "downloadingPct": {
+    "message": "$1 をダウンロード中… $2%"
+  },
+  "installing": {
+    "message": "$1 をインストール中…"
+  },
+  "localReady": {
+    "message": "✓ $1 で $2 に翻訳する準備ができました。"
+  },
+  "stateFmt": {
+    "message": "状態: $1"
+  },
+  "showBadge": {
+    "message": "ページにインジケーターを表示"
+  },
+  "showBadgeHint": {
+    "message": "右下に進行状況と原文表示ボタンを出します。"
+  },
+  "useCache": {
+    "message": "翻訳を記憶する"
+  },
+  "useCacheHint": {
+    "message": "同じページに戻るとすぐに翻訳され、上限も消費しません。"
+  },
+  "contextFirst": {
+    "message": "翻訳の前にページを理解する"
+  },
+  "contextHint": {
+    "message": "名前や用語を正しく扱うため、AIがまずページの内容を読み取ります。ページごとにリクエストが1回増えます。"
+  },
+  "uiEnglish": {
+    "message": "インターフェースを英語で表示"
+  },
+  "uiEnglishHint": {
+    "message": "ブラウザが別の言語でも、拡張機能を英語で表示します。名前とキーボードショートカットはブラウザの言語のままです。"
+  },
+  "notUsedWith": {
+    "message": "$1 では使われません。"
+  },
+  "alwaysSites": {
+    "message": "これらのサイトでは常に翻訳"
+  },
+  "neverSites": {
+    "message": "これらのサイトでは翻訳しない"
+  },
+  "neverSitesPh": {
+    "message": "mybank.co.jp"
+  },
+  "sitesHint": {
+    "message": "1行に1サイト（例: $1）。サブドメインも含みます。"
+  },
+  "advanced": {
+    "message": "詳細設定"
+  },
+  "advancedSummary": {
+    "message": "文体の指示、用語集、除外する部分、速度、保存した翻訳。"
+  },
+  "styleLabel": {
+    "message": "AIへの文体の指示"
+  },
+  "stylePh": {
+    "message": "例: です・ます調で。製品名や作品名は英語のまま。"
+  },
+  "styleHint": {
+    "message": "任意。指示を受け付けない Chrome 翻訳では使われません。"
+  },
+  "glossaryLabel": {
+    "message": "用語集"
+  },
+  "glossaryPh": {
+    "message": "sale = セール\nBlack Friday"
+  },
+  "glossaryHint": {
+    "message": "1 行に 1 ルール。「X = Y」は X を常に Y と訳し、「X」だけなら翻訳しません。単語単位で、大文字・小文字は区別しません。Chrome の翻訳機能では Y がそのまま入るため、前後の文とかみ合わないことがあります。"
+  },
+  "skipLabel": {
+    "message": "翻訳しないページ内の部分"
+  },
+  "skipPh": {
+    "message": ".price\n@amazon.com .a-price\n@youtube.com #channel-name"
+  },
+  "skipHint": {
+    "message": "そのまま残したいもの（価格、名前、ユーザー名）をサイトが翻訳してしまう場合だけ使います。CSS セレクターで1行に1つ指定し、先頭に $1 を付けるとそのサイトだけに適用されます。ブランド名、@ユーザー、#ハッシュタグ、アドレス、メール、コード、コマンドは自動で残ります。"
+  },
+  "domainCode": {
+    "message": "@ドメイン"
+  },
+  "speed": {
+    "message": "速度"
+  },
+  "maxChars": {
+    "message": "1回に送る文字数"
+  },
+  "concurrency": {
+    "message": "同時に送る数"
+  },
+  "speedHint": {
+    "message": "サービスを選ぶと自動で調整されます。LM Studio や Ollama では、同時に1件、約1500文字がおすすめです。"
+  },
+  "savedTr": {
+    "message": "保存した翻訳"
+  },
+  "clearCache": {
+    "message": "保存した翻訳を削除"
+  },
+  "cleared": {
+    "message": "完了。削除した数: $1"
+  },
+  "clearHint": {
+    "message": "サービスを変えて、ページを翻訳し直したいときに便利です。"
+  },
+  "save": {
+    "message": "変更を保存"
+  },
+  "unsaved": {
+    "message": "保存していない変更があります。"
+  },
+  "allSaved": {
+    "message": "すべて保存済みです。"
+  },
+  "savedMsg": {
+    "message": "変更を保存しました。"
+  },
+  "sessionKeys": {
+    "message": "ブラウザーを閉じたら API キーを消去する"
+  },
+  "sessionKeysHint": {
+    "message": "このパソコンには保存されません。ブラウザーを開くたびに貼り付け直す必要があります。共有パソコンで便利です。"
+  },
+  "keyLimitGemini": {
+    "message": "Google AI Studio で課金を有効にしなければ、このキーが他人の手に渡っても料金は発生しません。"
+  },
+  "keyLimitOpenrouter": {
+    "message": "OpenRouter でこのキーにクレジット上限を設定してください。他人の手に渡っても、それ以上は使えません。"
+  },
+  "keyLimitOpenai": {
+    "message": "OpenAI の請求設定で月の予算を決め、自動チャージをオフにしてください。キーが他人の手に渡っても、被害に上限ができます。"
+  },
+  "keyLimitAnthropic": {
+    "message": "Anthropic の請求設定で利用上限を決め、自動チャージをオフにしてください。キーが他人の手に渡っても、被害に上限ができます。"
+  },
+  "menuSelection": {
+    "message": "選択範囲を翻訳"
+  },
+  "selClose": {
+    "message": "閉じる"
+  },
+  "selCopy": {
+    "message": "コピー"
+  },
+  "selCopied": {
+    "message": "コピーしました"
+  },
+  "selCopyFail": {
+    "message": "コピーできませんでした"
+  },
+  "selListen": {
+    "message": "聞く"
+  },
+  "selEdit": {
+    "message": "テキストを編集"
+  },
+  "selReplace": {
+    "message": "置き換え"
+  },
+  "selReplaceStale": {
+    "message": "入力欄の文章が変わりました。もう一度選択してください。"
+  },
+  "selEditLabel": {
+    "message": "翻訳するテキスト"
+  },
+  "selTranslating": {
+    "message": "翻訳中…"
+  },
+  "selTooLong": {
+    "message": "テキストが多すぎます。$1 文字以内で選択するか、ページ全体を翻訳してください。"
+  },
+  "selRateLimit": {
+    "message": "API の上限です。$1 秒後にもう一度お試しください。"
+  },
+  "selectionButton": {
+    "message": "テキストを選択したらボタンを表示する"
+  },
+  "selectionButtonHint": {
+    "message": "クリックすると選択した部分の翻訳が表示されます。右クリックメニューの「選択範囲を翻訳」も使えます。"
+  },
+  "groupPaid": {
+    "message": "有料 API の翻訳"
+  },
+  "groupFreePaid": {
+    "message": "無料または有料プランの翻訳"
+  },
+  "groupLocal": {
+    "message": "パソコン上で動く翻訳"
+  },
+  "selListenFail": {
+    "message": "再生できませんでした ($1)。"
+  },
+  "recent": {
+    "message": "最近の翻訳"
+  },
+  "recentSearch": {
+    "message": "最近の翻訳を検索…"
+  },
+  "recentEmpty": {
+    "message": "選択したテキストの翻訳がここに表示されます（最新20件）。"
+  },
+  "recentClear": {
+    "message": "すべて削除"
+  },
+  "recentDelete": {
+    "message": "削除"
+  },
+  "recentNoMatch": {
+    "message": "一致する翻訳はありません。"
+  },
+  "keepRecent": {
+    "message": "最近の翻訳を保存する"
+  },
+  "keepRecentHint": {
+    "message": "選択したテキストの翻訳を最新20件まで保存し、ツールバーのポップアップで見返せます。このパソコンにのみ保存され、オフにすると削除されます。"
+  },
+  "recentFav": {
+    "message": "固定"
+  },
+  "srcAuto": {
+    "message": "自動"
+  },
+  "translateFrom": {
+    "message": "翻訳元"
+  }
+}

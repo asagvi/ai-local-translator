@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title data-i18n="download">Download</title>
+  <link rel="stylesheet" href="ui.css">
+  <script src="theme.js"></script>
+  <style>
+  @layer pagina {
+    body { background: var(--superficie); }
+    .descarga { display: grid; gap: 14px; justify-items: start; padding: 20px; }
+    .descarga__cabecera { display: flex; align-items: center; gap: 10px; }
+    .descarga__cabecera h1 { font-size: 1.05rem; }
+    .descarga progress { width: 100%; }
+  }
+  </style>
+</head>
+<body>
+  <main class="descarga">
+    <div class="descarga__cabecera">
+      <img class="marca" src="icons/marca.svg" alt="" width="26" height="26">
+      <h1 data-i18n="extName">Translator: Browser, AI &amp; Local</h1>
+    </div>
+    <p id="text" class="estado estado--aviso" role="status"></p>
+    <button type="button" id="btn" class="boton boton--principal" data-i18n="download">Download</button>
+    <progress id="bar" max="100" value="0" aria-labelledby="text" hidden></progress>
+  </main>
+
+  <script src="settings.js"></script>
+  <script src="nano.js"></script>
+  <script src="descargar.js"></script>
+</body>
+</html>

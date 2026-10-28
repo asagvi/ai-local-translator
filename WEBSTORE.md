@@ -42,8 +42,9 @@ or stored, update both.
 
 ## Remote code
 
-> No, I am not using remote code. All JavaScript is included in the package. The extension only exchanges
-> JSON data (text to translate and translations) with the AI service the user selects.
+Choose **"No, I am not using remote code"**. Nothing else to fill in: the justification box only appears with
+"Yes". All JavaScript is in the package (no `eval`, `new Function` or scripts loaded from a URL); the AI services
+only exchange JSON text.
 
 ## Data usage
 

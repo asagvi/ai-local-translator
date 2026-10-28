@@ -34,7 +34,7 @@
     'font', 'big', 'img', 'br', 'wbr', 'del', 'ins', 'tt', 'ruby', 'rt', 'rp',
   ]);
   // Clases típicas de resaltadores y editores de código (GitHub, Prism, highlight.js, CodeMirror, Monaco...).
-  const CODE_CLASS_RE = /(?:^|\s)(?:hljs|prism-|codemirror|cm-editor|cm-content|cm-line|monaco-editor|view-lines|ace_|blob-code|react-code|react-file-line|code-?block|codehilite|sourcecode|highlight-source|gist-|katex|mathjax|mjx-|shiki|line-numbers|diff-(?:line|code)|terminal-output|xterm)/i;
+  const CODE_CLASS_RE = /(?:^|\s)(?:hljs|prism-|codemirror|cm-editor|cm-content|cm-line|monaco-editor|view-lines|ace_|blob-code|react-code|react-file-line|code-?block|codehilite|sourcecode|highlight-source|gist-(?:file|data|meta)|katex|mathjax|mjx-|shiki|line-numbers|diff-(?:line|code)|terminal-output|xterm)/i;
   const MONO_RE = /mono|consol|menlo|monaco|courier|fira code|hack\b|inconsolata|lucida console|sfmono/i;
   const TAG_RE = /<(\/?)g(\d+)\s*>|<x(\d+)\s*\/?>|<\/x\d+\s*>/g;
   const LETTER_RE = /\p{L}/u;
@@ -120,6 +120,9 @@
     return v;
   }
 
+  // Visor de GitHub (gists) con un archivo de texto: sus líneas son prosa aunque lleven clases de código.
+  const inTextFile = (el) => !!el.closest('.blob-wrapper.type-text, .blob-wrapper.type-markdown');
+
   function isProtected(el) {
     let v = protCache.get(el);
     if (v !== undefined) return v;
@@ -131,7 +134,7 @@
     else if (el.isContentEditable) v = true;
     else {
       const cls = el.getAttribute('class');
-      if (cls && (/(?:^|\s)notranslate(?:\s|$)/.test(cls) || CODE_CLASS_RE.test(cls))) v = true;
+      if (cls && (/(?:^|\s)notranslate(?:\s|$)/.test(cls) || (CODE_CLASS_RE.test(cls) && !inTextFile(el)))) v = true;
       else if (userSkip) {
         try { v = el.matches(userSkip); } catch { v = false; }
       }
@@ -1268,7 +1271,8 @@
         .tarjeta__aviso { flex: 1 1 auto; text-align: end; padding-right: 6px; font-size: 12px; color: #3fc6a3; }
         .tarjeta__editar { display: grid; justify-items: end; gap: 8px; margin: 0; }
         .tarjeta__editar[hidden] { display: none; }
-        .tarjeta__texto { box-sizing: border-box; width: 100%; max-height: 30vh; padding: 8px 10px; border: 1px solid #39425c;
+        .tarjeta__editar-botones { display: flex; gap: 6px; }
+        .tarjeta__texto { box-sizing: border-box; width: 100%; max-height: 45vh; padding: 8px 10px; border: 1px solid #39425c;
           border-radius: 8px; background: #11172a; color: #e6e9f1; font: 400 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; resize: vertical; }
         .tarjeta__texto:focus-visible { outline: 2px solid #8db4ff; outline-offset: 1px; }
         .tarjeta__idioma { min-width: 0; max-width: 180px; padding: 3px 6px; border: 1px solid #39425c; border-radius: 6px; background: #232b44;
@@ -1286,8 +1290,11 @@
         <div class="tarjeta__cuerpo">
           <p class="tarjeta__original"></p>
           <form class="tarjeta__editar" hidden>
-            <textarea class="tarjeta__texto" rows="3"></textarea>
-            <button class="tarjeta__accion tarjeta__ir" type="submit"></button>
+            <textarea class="tarjeta__texto" rows="8"></textarea>
+            <span class="tarjeta__editar-botones">
+              <button class="tarjeta__accion tarjeta__anular" type="button"></button>
+              <button class="tarjeta__accion tarjeta__ir" type="submit"></button>
+            </span>
           </form>
           <div class="tarjeta__traduccion" aria-live="polite"></div>
           <p class="tarjeta__tipo" hidden></p>
@@ -1309,6 +1316,7 @@
       significados: q('.tarjeta__significados'), acciones: q('.tarjeta__acciones'), copiar: q('.tarjeta__copiar'),
       oir: q('.tarjeta__oir'), aviso: q('.tarjeta__aviso'), idioma: q('.tarjeta__destino'), origen: q('.tarjeta__origen'),
       editar: q('.tarjeta__editar'), texto: q('.tarjeta__texto'), ir: q('.tarjeta__editar .tarjeta__ir'), edita: q('.tarjeta__edita'),
+      anular: q('.tarjeta__anular'),
       bajar: q('.tarjeta__bajar'), cambiar: q('.tarjeta__cambiar'),
     };
     const e = selEls;
@@ -1332,6 +1340,7 @@
     e.oir.lastChild.textContent = aitT('selListen');
     e.edita.lastChild.textContent = aitT('selEdit');
     e.ir.textContent = aitT('translate');
+    e.anular.textContent = aitT('selEditCancel');
     e.bajar.textContent = aitT('download');
     e.bajar.addEventListener('click', () => {
       if (selDownload) chrome.runtime.sendMessage({ type: 'download', pair: selDownload.pair });
@@ -1343,6 +1352,11 @@
       e.original.hidden = true;
       e.editar.hidden = false;
       e.texto.focus();
+    });
+    e.anular.addEventListener('click', () => {
+      e.editar.hidden = true;
+      e.original.hidden = false;
+      e.edita.focus();
     });
     e.editar.addEventListener('submit', (ev) => {
       ev.preventDefault();

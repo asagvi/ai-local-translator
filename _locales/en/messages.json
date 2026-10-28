@@ -716,6 +716,9 @@
   "selEdit": {
     "message": "Edit text"
   },
+  "selEditCancel": {
+    "message": "Cancel"
+  },
   "selReplace": {
     "message": "Replace"
   },

@@ -716,6 +716,9 @@
   "selEdit": {
     "message": "编辑文本"
   },
+  "selEditCancel": {
+    "message": "取消"
+  },
   "selReplace": {
     "message": "替换"
   },

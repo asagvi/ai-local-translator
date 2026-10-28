@@ -716,6 +716,9 @@
   "selEdit": {
     "message": "텍스트 편집"
   },
+  "selEditCancel": {
+    "message": "취소"
+  },
   "selReplace": {
     "message": "바꾸기"
   },

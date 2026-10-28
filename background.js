@@ -20,10 +20,11 @@ Return ONLY a JSON object with these keys:
   "domain": "field / technology stack (e.g. 'Magento 2 PHP development', 'cooking', 'finance')",
   "sourceLanguage": "main language of the page",
   "tone": "register to keep (formal, casual, technical, marketing...)",
-  "keepVerbatim": ["terms that must NEVER be translated on this page: product, library, framework, API, class, function, command, config key, CLI flag, brand and people names, UI element names that refer to a literal label in an English-only tool, etc."],
+  "keepVerbatim": ["terms that must NEVER be translated on this page: product, library, framework, API, class, function, command, config key, CLI flag, brand and people names, etc. NOT this page's own interface: its menus, buttons, links, footer and labels (Home, Help Center, Sign in...) are translated."],
   "glossary": { "source term": "preferred ${target} term" },
   "notes": "max 3 short instructions specific to this page (e.g. 'keep Magento admin menu paths in English', 'technical audience: keep standard English jargon like deploy, commit, cache when natural in ${target}')"
 }
+keepVerbatim is only for names and code. Ordinary words and phrases never go in it, even capitalized menu, link, button or footer labels (Home, Help Center, Privacy Policy, Sign in): the reader needs those in ${target}.
 Limits: keepVerbatim max 60 items, glossary max 40 entries. Base everything on the evidence given; do not invent.`;
 }
 
@@ -447,6 +448,9 @@ async function handleProfile(msg) {
     ),
     notes: String(p.notes || '').slice(0, 500),
   };
+  // Un término con traducción en el glosario no puede quedar también como intocable.
+  const glossed = new Set(Object.keys(profile.glossary).map((k) => k.toLowerCase()));
+  profile.keepVerbatim = profile.keepVerbatim.filter((x) => !glossed.has(x.toLowerCase()));
   try { await chrome.storage.session.set({ [key]: profile }); } catch { /* ignore */ }
   return { ok: true, profile };
 }

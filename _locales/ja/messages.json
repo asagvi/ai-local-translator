@@ -716,6 +716,9 @@
   "selEdit": {
     "message": "テキストを編集"
   },
+  "selEditCancel": {
+    "message": "キャンセル"
+  },
   "selReplace": {
     "message": "置き換え"
   },

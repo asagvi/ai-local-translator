@@ -50,7 +50,8 @@ let detector = null;
 
 async function detectLang(text, fallback) {
   try {
-    if (typeof LanguageDetector === 'undefined' || (await LanguageDetector.availability()) !== 'available') return fallback;
+    // Con 'downloadable' se baja solo (pocos MB, sin gesto): si no, el texto se traduce como si fuera del idioma de la página.
+    if (typeof LanguageDetector === 'undefined' || (await LanguageDetector.availability()) === 'unavailable') return fallback;
     detector ??= LanguageDetector.create();
     const [top] = await (await detector).detect(text);
     return top && top.detectedLanguage !== 'und' && top.confidence > 0.5 ? top.detectedLanguage.split('-')[0] : fallback;
@@ -100,6 +101,10 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg?.target !== 'offscreen') return false;
   if (msg.type === 'chrome-translate') {
     chromeTranslate(msg).then((r) => sendResponse({ ok: true, ...r }));
+    return true;
+  }
+  if (msg.type === 'detect') {
+    detectLang(msg.text, '').then((lang) => sendResponse({ ok: true, lang }));
     return true;
   }
   if (msg.type === 'chrome-status') {

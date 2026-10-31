@@ -512,7 +512,7 @@ function setupTheme() {
     list.append(...ids.map((id) => serviceItem(id, AIT_PROVIDERS[id])));
     $('moreList').append(Object.assign(document.createElement('h3'), { className: 'servicios__grupo', textContent: titles[i] }), list);
   }
-  $('langPick').replaceChildren(...AIT_LANGUAGES.map((l) => new Option(l)), new Option(aitT('otherLang'), OTHER_LANG));
+  $('langPick').replaceChildren(...AIT_LANGUAGES.map((l) => new Option(aitLangLabel(l), l)), new Option(aitT('otherLang'), OTHER_LANG));
 
   ($('form').querySelector(`.servicio__radio[value="${s.provider}"]`) || $('form').querySelector('.servicio__radio[value="custom"]')).checked = true;
   for (const f of FIELDS) $(f).value = s[f] ?? '';

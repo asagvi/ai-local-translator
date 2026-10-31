@@ -231,6 +231,19 @@ function aitGlossRestore(text, subs) {
   return seen.every((c) => c === 1) ? out : null;
 }
 
+// Lo que se ve en un selector: "Coreano — 한국어". El valor sigue siendo el nombre propio, que es lo que recibe la IA.
+const AIT_LANG_VARIANT = { 'Español (Latinoamérica)': 'es-419', 'Português (Brasil)': 'pt-BR', 'Português (Portugal)': 'pt-PT', '中文 (简体)': 'zh-Hans' };
+function aitLangLabel(name, ui = AIT_UI_LANG) {
+  const code = AIT_LANG_VARIANT[name] || AIT_LANGS.find(([l]) => l === name)?.[1];
+  if (!code || code.split('-')[0] === ui.toLowerCase().split('-')[0]) return name;
+  try {
+    const local = new Intl.DisplayNames([ui], { type: 'language' }).of(code);
+    return local && aitNorm(local) !== aitNorm(name) ? `${local[0].toLocaleUpperCase(ui) + local.slice(1)} — ${name}` : name;
+  } catch {
+    return name;
+  }
+}
+
 // Nombre de la lista que corresponde al idioma del navegador; English si no está.
 function aitUiTarget(ui = AIT_BROWSER_LANG) {
   const lc = ui.toLowerCase();

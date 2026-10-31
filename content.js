@@ -1589,10 +1589,18 @@
     e.par.textContent = from;
     e.origen.hidden = !pickSrc;
     if (pickSrc) {
-      e.origen.replaceChildren(new Option(pick.field ? from : `${from} (${auto})`, ''), ...AIT_LANGUAGES.map((l) => new Option(l)));
+      e.origen.replaceChildren(new Option(pick.field ? from : `${from} (${auto})`, ''), ...AIT_LANGUAGES.map((l) => new Option(aitLangLabel(l), l)));
       e.origen.value = selSrc;
     }
-    e.idioma.replaceChildren(...[...new Set([selTarget(), ...AIT_LANGUAGES])].map((l) => new Option(l)));
+    // El origen real es el del texto seleccionado (una cita en ruso en una página en inglés): se corrige al detectarlo.
+    chrome.runtime.sendMessage({ type: 'detect', text: pick.text }).then((r) => {
+      if (seq !== selSeq || !r?.lang) return;
+      let name = r.lang;
+      try { name = new Intl.DisplayNames([AIT_UI_LANG], { type: 'language' }).of(r.lang) || name; } catch { /* código raro */ }
+      e.par.textContent = name;
+      if (pickSrc) e.origen.options[0].textContent = `${name} (${auto})`;
+    }).catch(() => {});
+    e.idioma.replaceChildren(...[...new Set([selTarget(), ...AIT_LANGUAGES])].map((l) => new Option(aitLangLabel(l), l)));
     e.idioma.value = selTarget();
     e.original.textContent = pick.text;
     e.original.hidden = false;

@@ -19,4 +19,11 @@ const cases = {
 };
 for (const [name, code] of Object.entries(cases)) assert.strictEqual(aitLangCode(name), code, `${name} → ${aitLangCode(name)} (esperado ${code})`);
 for (const name of AIT_LANGUAGES) assert.ok(aitLangCode(name), `${name} de la lista no tiene código`);
+// Lo que se ve en los selectores: el nombre en el idioma de la interfaz y el propio al lado.
+const labels = [
+  ['한국어', 'es', 'Coreano — 한국어'], ['বাংলা', 'es', 'Bengalí — বাংলা'], ['한국어', 'en', 'Korean — 한국어'],
+  ['Español', 'es', 'Español'], ['Español (Latinoamérica)', 'es', 'Español (Latinoamérica)'], ['English', 'en', 'English'],
+  ['Português (Brasil)', 'en', 'Brazilian Portuguese — Português (Brasil)'], ['Klingon', 'es', 'Klingon'], ['Italiano', 'es', 'Italiano'],
+];
+for (const [name, ui, want] of labels) assert.strictEqual(aitLangLabel(name, ui), want, `${name} en ${ui}`);
 console.log('lang OK');

@@ -763,6 +763,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       case 'translate': return handleTranslate(msg);
       case 'profile': return handleProfile(msg);
       case 'lookup': return handleLookup(msg);
+      case 'detect': {
+        // Idioma del texto seleccionado, para la cabecera de la tarjeta: el lang de la página no dice el de la selección.
+        await ensureOffscreen();
+        const r = await chrome.runtime.sendMessage({ target: 'offscreen', type: 'detect', text: String(msg.text || '').slice(0, 2000) });
+        return { ok: true, lang: r?.lang || '' };
+      }
       case 'test': return handleTest();
       case 'models': return handleModels(msg);
       case 'clearCache': return { ok: true, removed: await clearCache() };

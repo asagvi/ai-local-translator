@@ -53,7 +53,7 @@ function setStatus(text, kind = '', announce = true) {
   $('bilingual').checked = Boolean(settings.bilingual);
 
   const langs = [...new Set([settings.targetLang, ...AIT_LANGUAGES])];
-  $('lang').replaceChildren(...langs.map((l) => new Option(l)));
+  $('lang').replaceChildren(...langs.map((l) => new Option(aitLangLabel(l), l)));
   $('lang').value = settings.targetLang;
 
   async function send(type, extra) {
@@ -81,7 +81,7 @@ function setStatus(text, kind = '', announce = true) {
 
   // Con el Traductor de Chrome el origen se puede elegir (la página puede declarar mal su idioma); la IA lo reconoce sola.
   const pickSrc = aitProviderType(settings) === 'chrome';
-  if (pickSrc) $('src').replaceChildren(new Option('', ''), ...AIT_LANGUAGES.map((l) => new Option(l)));
+  if (pickSrc) $('src').replaceChildren(new Option('', ''), ...AIT_LANGUAGES.map((l) => new Option(aitLangLabel(l), l)));
   $('src').hidden = !pickSrc;
   $('fromBox').hidden = pickSrc;
   $('src').addEventListener('change', async () => {

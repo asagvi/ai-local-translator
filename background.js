@@ -145,14 +145,26 @@ async function callNano(s, system, user, opts) {
   return r.text;
 }
 
+// Detector de idioma de las extensiones (chrome.i18n): respaldo de LanguageDetector, que Brave no trae. Sin un resultado fiable, fallback.
+async function detectText(text, fallback) {
+  try {
+    const r = await chrome.i18n.detectLanguage(String(text).slice(0, 2000));
+    const top = r?.isReliable && r.languages?.[0]?.language;
+    if (top && top !== 'und') return top.toLowerCase().split('-')[0];
+  } catch { /* sin detector */ }
+  return fallback;
+}
+
 // Translator API en el documento offscreen. texts null = usar Gemini Nano; availability dice por qué.
 async function callChromeTranslator(s, texts, pageLang, srcLang) {
   await ensureOffscreen();
+  const lang = String(pageLang || '').toLowerCase().split('-')[0];
   const r = await chrome.runtime.sendMessage({
     target: 'offscreen',
     type: 'chrome-translate',
     texts,
-    pageLang: String(pageLang || '').toLowerCase().split('-')[0],
+    // El offscreen prueba LanguageDetector primero; esto es lo que usa si no está.
+    pageLang: srcLang ? lang : await detectText(texts.join('\n'), lang),
     outLang: aitLangCode(s.targetLang),
     srcLang,
   });
@@ -509,7 +521,8 @@ async function handleTranslate(msg) {
     const got = await chrome.storage.local.get(keys);
     pending = [];
     items.forEach((it, i) => {
-      if (typeof got[keys[i]] === 'string') results[it.id] = got[keys[i]];
+      // Con el Traductor, igual al original suele ser un idioma mal detectado: se vuelve a pedir (es local y gratis).
+      if (typeof got[keys[i]] === 'string' && !(type === 'chrome' && got[keys[i]] === it.t)) results[it.id] = got[keys[i]];
       else pending.push(it);
     });
   }
@@ -525,7 +538,7 @@ async function handleTranslate(msg) {
     trPair = pair || '';
     if (texts) {
       pending.forEach((it, i) => { results[it.id] = texts[i]; });
-      if (s.useCache) await cacheStore(Object.fromEntries(pending.map((it, i) => [cacheKey(s, it.t, src), texts[i]])));
+      if (s.useCache) await cacheStore(Object.fromEntries(pending.filter((it, i) => texts[i] !== it.t).map((it) => [cacheKey(s, it.t, src), results[it.id]])));
       pending = [];
     }
   }
@@ -767,7 +780,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         // Idioma del texto seleccionado, para la cabecera de la tarjeta: el lang de la página no dice el de la selección.
         await ensureOffscreen();
         const r = await chrome.runtime.sendMessage({ target: 'offscreen', type: 'detect', text: String(msg.text || '').slice(0, 2000) });
-        return { ok: true, lang: r?.lang || '' };
+        return { ok: true, lang: r?.lang || await detectText(msg.text || '', '') };
       }
       case 'test': return handleTest();
       case 'models': return handleModels(msg);

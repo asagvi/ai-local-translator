@@ -143,7 +143,7 @@ Además se traducen los atributos `placeholder`, `title`, `alt` y `aria-label` (
 - "Olvidar las API keys al cerrar el navegador" (`sessionKeys`, apagado por defecto, en el campo de la key): `aitSaveSettings()` guarda las keys en `chrome.storage.session` (`keys: {servicio: key}`, solo contextos de confianza) y `services` en `storage.local` sin `apiKey`; `aitGetSettings()` las vuelve a juntar. Al cerrar el navegador se borran y el resto de la config sigue. Por eso el aviso `settings` a las pestañas también sale con un cambio de `keys` en `session`. Se descartó cifrar con una clave guardada en la extensión (disimulo) y la contraseña maestra (decisión del usuario: molesta y protege lo mismo contra quien lee el disco). Lo que cuida la plata es el tope de la key: `#keyLimit` (`keyLimitGemini`, `keyLimitOpenrouter`, `keyLimitOpenai`, `keyLimitAnthropic`) dice cómo ponerlo en cada servicio. Probado en Chrome 156 temporal (2026-10-26): con el interruptor, `storage.local` sin la key; al reabrir el navegador, key vacía y servicio e interruptor guardados.
 - `handleModels()` toma lo que falta del formulario del mismo servicio que pide (`aitServiceFields`), nunca del que está en uso; un `provider` desconocido se rechaza.
 - `fetchJSON()` no sigue redirecciones si la consulta lleva key (`redirect: 'error'`): fetch quita `Authorization` al cambiar de dominio, pero no `x-api-key` ni `x-goog-api-key`. Un servidor propio que redirige da "No se pudo conectar".
-- El indicador va en un Shadow DOM `closed`: los errores del proveedor que muestra no los puede leer la página. Las pruebas `tests/e2e_*.py` leían el indicador por `shadowRoot` y ya no pueden.
+- El indicador va en un Shadow DOM `closed`: los errores del proveedor que muestra no los puede leer la página. Las pruebas `tests/e2e_*.py` lo leen por CDP (`DOM.getDocument` con `pierce`, `badge()` en `tests/ext.py`).
 - Probado en Chrome 156 (2026-10-26): `storage.local.get` desde el content script da "Access to storage is not allowed from this context"; `models` y `test` desde el content script, rechazados; `models` de `custom` desde Opciones no lleva la key de Gemini guardada; una redirección con key no llega al segundo servidor; un cambio de dirección en Opciones reintenta la pestaña con error sin recargarla.
 
 ## Idioma de la interfaz
@@ -162,7 +162,7 @@ Además se traducen los atributos `placeholder`, `title`, `alt` y `aria-label` (
 
 ## Qué se probó (y cómo)
 
-Se probó en Chromium 153 headless vía Playwright, con la extensión real cargada:
+Se prueba en el Chromium de Playwright (Chrome for Testing 156) headless, con la extensión real cargada por CDP (`launch()` en `tests/ext.py`: `--enable-unsafe-extension-debugging` y `Extensions.loadUnpacked`, porque Chrome ya no acepta `--load-extension`). Cada script termina con `FALLAS:` y sale con 1 si algo falló:
 
 - **`tests/e2e_basic.py`**: proveedor `custom` contra `tests/server.py`, que imita un LLM compatible con OpenAI pasando el texto a mayúsculas con el prefijo `ES:`. También responde el `lookup` (`ES:PALABRA`, `sustantivo`) y sirve cualquier `.html` de `tests/` por su nombre (`/selection.html`); el resto de las rutas da `page.html`.
   - Se respetaron `<pre><code>`, `bin/magento…` inline, `.highlight-source-*`, el div monoespaciado `$ composer…`, `translate="no"` y `camelCaseIdentifier`.
@@ -171,7 +171,7 @@ Se probó en Chromium 153 headless vía Playwright, con la extensión real carga
   - Ante etiquetas rotas por la IA hubo un reintento y luego se dejó el original.
   - Se tradujo el contenido dinámico y un cambio de texto tipo React (supersede).
   - Original ↔ traducción es idempotente: el DOM vuelve a quedar idéntico.
-- **`tests/e2e_modes.py nano`** (ya no corre: guarda `provider: 'nano'`, que ahora se lee como el Traductor): `LanguageModel` falso (`tests/fake.js`, inyectado en una copia de `nano.js`). Valida el flujo offscreen, los esquemas y "Probar traducción".
+- **`tests/e2e_modes.py nano`**: Traductor de Chrome con un `LanguageModel` falso (`tests/fake.js`, inyectado en una copia de `nano.js`). En ese Chromium el par está `downloadable` y sin gesto no se crea el `Translator`, así que todo pasa por el respaldo de Nano. Valida el flujo offscreen, los esquemas y "Probar traducción".
 - **`tests/e2e_modes.py rate`**: el servidor responde 429 con `retryDelay: 6s` en el primer lote. Se verificó que la extensión pausa, muestra la cuenta regresiva y continúa.
 
 - **`tests/models.test.js`**: `node tests/models.test.js`, sin dependencias. Filtro de modelos de texto y modelo recomendado por proveedor.
@@ -194,7 +194,7 @@ Se probó en Chromium 153 headless vía Playwright, con la extensión real carga
 
 - **Interfaz en Chrome visible**: Chrome en el puerto 9222 con `--enable-unsafe-extension-debugging`, la extensión cargada con `Extensions.loadUnpacked` por el websocket del navegador, y el MCP de Playwright conectado con `browserType().connectOverCDP('http://127.0.0.1:9222')` desde `browser_run_code_unsafe`. El MCP de chrome-devtools no sirve: bloquea las URL `chrome-extension://`. El popup se abre como pestaña con un `addInitScript` que apunta `chrome.tabs.query` a la página de prueba.
 
-Para correr las pruebas: `pip install playwright && python -m playwright install chromium`, luego `cd tests && python e2e_basic.py`. Usan el puerto 8765.
+Para correr las pruebas: `python -m venv tests/.venv && tests/.venv/bin/pip install playwright && tests/.venv/bin/python -m playwright install chromium`, luego `cd tests && .venv/bin/python e2e_basic.py` (y `e2e_modes.py nano`, `e2e_modes.py rate`). Usan el puerto 8765.
 
 ## NO probado (dónde buscar si algo falla)
 

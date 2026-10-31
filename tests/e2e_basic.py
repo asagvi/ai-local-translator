@@ -1,15 +1,15 @@
 import json, time, tempfile, subprocess, sys, urllib.request
 from playwright.sync_api import sync_playwright
+from ext import launch, badge
 import os
 HERE = os.path.dirname(os.path.abspath(__file__))
 EXT = os.path.dirname(HERE)
 srv = subprocess.Popen([sys.executable, os.path.join(HERE, 'server.py')])
 time.sleep(1)
+fails = ['no terminó']
 try:
   with sync_playwright() as p:
-    ctx = p.chromium.launch_persistent_context(tempfile.mkdtemp(), channel='chromium', headless=True,
-        args=[f'--disable-extensions-except={EXT}', f'--load-extension={EXT}'])
-    sw = ctx.service_workers[0] if ctx.service_workers else ctx.wait_for_event('serviceworker')
+    ctx, sw = launch(p, EXT)
     sw.evaluate("""chrome.storage.local.set({settings:{provider:'custom',baseUrl:'http://127.0.0.1:8765/v1',model:'mock',apiKey:'',targetLang:'Español',contextFirst:true,useCache:false}})""")
     page = ctx.new_page()
     errs = []
@@ -37,14 +37,24 @@ try:
     time.sleep(0.5)
     again = html()
     print('RE-TRADUCIDO IGUAL:', again==after, [k for k in after if after[k]!=again[k]])
-    badge = page.evaluate("document.getElementById('__ait_badge__')?.shadowRoot.querySelector('.msg').textContent")
-    print('BADGE:', badge)
+    print('BADGE:', badge(page))
     log = json.loads(urllib.request.urlopen('http://127.0.0.1:8765/log').read())
     print('\nPETICIONES:')
     for l in log:
         if l['type']=='profile': print(' profile; inline code:', [x for x in l['user'].split('\n') if 'Inline' in x or '|' in x][:2])
         else: print(' translate:', json.dumps(l['items'], ensure_ascii=False))
     print('\nCONSOLA:', errs)
+    fails = [m for ok, m in [
+        (after['p1'].startswith('ES:') and '<code>' in after['p1'], 'p1 sin traducir o sin el código'),
+        (after['pre1'] == before['pre1'], 'pre1 cambió'),
+        (after['p3'] == before['p3'], 'p3 (etiquetas rotas) no quedó en el original'),
+        (after['d1'] and after['d1'].startswith('ES:'), 'contenido dinámico sin traducir'),
+        (not diffs, 'el original no quedó idéntico'),
+        (again == after, 'la re-traducción no es igual'),
+        (not errs, 'errores en consola'),
+    ] if not ok]
     ctx.close()
 finally:
   srv.kill()
+print('\nFALLAS:', fails or 'ninguna')
+sys.exit(1 if fails else 0)

@@ -676,13 +676,14 @@ async function handleTest() {
 /* Pestañas, atajo y menú contextual                                  */
 /* ------------------------------------------------------------------ */
 
-async function sendToTab(tabId, message) {
+// frameId: solo a ese frame (la selección del menú contextual); sin él, al principal.
+async function sendToTab(tabId, message, frameId = 0) {
   try {
-    return await chrome.tabs.sendMessage(tabId, message);
+    return await chrome.tabs.sendMessage(tabId, message, { frameId });
   } catch {
     // La pestaña se abrió antes de instalar la extensión: inyectar y reintentar.
-    await chrome.scripting.executeScript({ target: { tabId }, files: ['settings.js', 'content.js'] });
-    return chrome.tabs.sendMessage(tabId, message);
+    await chrome.scripting.executeScript({ target: { tabId, frameIds: [frameId] }, files: ['settings.js', 'content.js'] });
+    return chrome.tabs.sendMessage(tabId, message, { frameId });
   }
 }
 
@@ -755,7 +756,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === 'ait-toggle') toggleActiveTab(tab);
   if (info.menuItemId === 'ait-selection' && tab?.id && /^(https?|file):/.test(tab.url || '')) {
-    sendToTab(tab.id, { type: 'selection', text: info.selectionText || '' }).catch((e) => console.warn('[Traductor IA]', e));
+    sendToTab(tab.id, { type: 'selection', text: info.selectionText || '' }, info.frameId || 0).catch((e) => console.warn('[Traductor IA]', e));
   }
 });
 

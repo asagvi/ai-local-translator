@@ -9,3 +9,4 @@ dist/
 .playwright-mcp/
 .codegraph/
 __pycache__/
+tests/.venv/

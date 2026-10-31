@@ -386,7 +386,8 @@ async function localCheck(download) {
   const status = $('localStatus');
   const btn = $('localBtn');
   const out = aitLangCode($('targetLang').value);
-  btn.hidden = false;
+  // Sin un idioma reconocido no hay nada que descargar ni comprobar hasta que cambie "Traducir a".
+  btn.hidden = !out;
   if (!out) {
     setStatus(status, aitT('localNeedLang', kind.name), 'error');
     return;

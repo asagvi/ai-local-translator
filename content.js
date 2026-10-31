@@ -1727,9 +1727,18 @@
     await aitLoadUi(s.uiEnglish);
   }));
 
+  // En un iframe (la descripción de eBay) solo va la selección: la página la traduce y la cuenta el frame principal.
+  const inFrame = window !== top;
+
   chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     if (msg?.type === 'settings') {
       settingsChanged(msg.settings);
+      return false;
+    }
+    if (inFrame) {
+      // Sin responder: el popup recibe el estado del frame principal.
+      if (msg?.type === 'selection') init().then(() => openSelection(msg.text || ''));
+      if (msg?.type === 'downloaded' && selDownload) translateSelection(selDownload.pick);
       return false;
     }
     (async () => {
@@ -1789,6 +1798,7 @@
 
   (async () => {
     await init();
+    if (inFrame) return;
     const host = location.hostname;
     if (aitHostMatches(settings.alwaysSites, host) && !aitHostMatches(settings.neverSites, host) && !pageLangMatchesTarget()) {
       translatePage();

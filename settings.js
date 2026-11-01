@@ -426,3 +426,12 @@ function aitAddRecent(history, entry, max = 20) {
     .filter((h) => h.fav || free++ < max)
     .slice(0, 120);
 }
+
+// Caché de traducciones: cada entrada es {t, at} y vale 7 días. Lo guardado sin fecha (el texto solo) ya no sirve.
+const AIT_CACHE_DAYS = 7;
+
+function aitCacheValue(entry, now = Date.now()) {
+  if (typeof entry?.t !== 'string' || typeof entry.at !== 'number') return null;
+  const age = now - entry.at;
+  return age >= 0 && age < AIT_CACHE_DAYS * 864e5 ? entry.t : null;
+}

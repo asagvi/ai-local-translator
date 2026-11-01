@@ -358,8 +358,24 @@ async function cacheStore(entries) {
     await clearCache();
     count = keys.length;
   }
-  await chrome.storage.local.set({ ...entries, cacheCount: count });
+  const at = Date.now();
+  const stamped = Object.fromEntries(keys.map((k) => [k, { t: entries[k], at }]));
+  await chrome.storage.local.set({ ...stamped, cacheCount: count });
 }
+
+// Borra lo vencido que nadie vuelve a pedir. Una vez por día como mucho: el service worker arranca seguido y leer
+// toda la caché (hasta 40 000 entradas) cada vez sería caro.
+async function cacheSweep() {
+  const { cacheSweptAt = 0 } = await chrome.storage.local.get('cacheSweptAt');
+  const now = Date.now();
+  if (now - cacheSweptAt >= 0 && now - cacheSweptAt < 864e5) return;
+  const all = await chrome.storage.local.get(null);
+  const keys = Object.keys(all).filter((k) => k.startsWith('c:'));
+  const old = keys.filter((k) => aitCacheValue(all[k], now) === null);
+  if (old.length) await chrome.storage.local.remove(old);
+  await chrome.storage.local.set({ cacheCount: keys.length - old.length, cacheSweptAt: now });
+}
+cacheSweep().catch((e) => console.warn('[Traductor IA] cacheSweep', e));
 
 // Las últimas traducciones de la tarjeta de la selección, para el popup. Viven en storage.local (solo contextos de
 // confianza): ninguna página las lee.
@@ -490,6 +506,29 @@ function withTarget(s, lang) {
   return AIT_LANGUAGES.includes(lang) ? { ...s, targetLang: lang } : s;
 }
 
+function resultMap(text) {
+  let obj = parseJSON(text);
+  if (obj && typeof obj.translations === 'object') obj = obj.translations;
+  const map = {};
+  if (Array.isArray(obj)) {
+    obj.forEach((o) => { if (o && o.id != null) map[String(o.id)] = o.t ?? o.text ?? o.translation; });
+  } else if (obj && typeof obj === 'object') {
+    Object.assign(map, obj);
+  }
+  return map;
+}
+
+// Idioma de cada texto, sin las marcas ('' si no se sabe). LanguageDetector reconoce frases cortas ("Best song after
+// a breakup") que chrome.i18n no da por seguras; Brave no lo trae.
+async function detectEach(list) {
+  await ensureOffscreen();
+  return Promise.all(list.map(async (it) => {
+    const text = it.t.replace(/<\/?[gx]\d+\/?>/g, ' ').slice(0, 2000);
+    const r = await chrome.runtime.sendMessage({ target: 'offscreen', type: 'detect', text }).catch(() => null);
+    return r?.lang || await detectText(text, '');
+  }));
+}
+
 async function handleTranslate(msg) {
   const s = withTarget(await aitGetSettings(), msg.targetLang);
   // Idioma de origen elegido a mano en el popup o la tarjeta (solo de la lista); si no, se detecta.
@@ -522,7 +561,8 @@ async function handleTranslate(msg) {
     pending = [];
     items.forEach((it, i) => {
       // Con el Traductor, igual al original suele ser un idioma mal detectado: se vuelve a pedir (es local y gratis).
-      if (typeof got[keys[i]] === 'string' && !(type === 'chrome' && got[keys[i]] === it.t)) results[it.id] = got[keys[i]];
+      const v = aitCacheValue(got[keys[i]]);
+      if (v !== null && !(type === 'chrome' && v === it.t)) results[it.id] = v;
       else pending.push(it);
     });
   }
@@ -543,20 +583,35 @@ async function handleTranslate(msg) {
     }
   }
 
+  // Con mucho texto ya en el idioma de destino en el lote (YouTube en español), la IA lo devuelve entero sin traducir:
+  // eso no se envía.
+  const target = aitLangCode(s.targetLang).split('-')[0];
+  if (pending.length && target && !msg.test) {
+    const langs = await detectEach(pending);
+    pending = pending.filter((it, i) => {
+      if (langs[i] !== target) return true;
+      results[it.id] = it.t;
+      return false;
+    });
+  }
+
   if (pending.length) {
     // En local, sin URL ni perfil: el prompt de sistema queda igual y Nano reutiliza la sesión entre páginas.
     const system = translateSystemPrompt(s, local ? null : msg.profile, local && !hybrid ? null : msg.page);
-    const payload = JSON.stringify(pending.map((it) => ({ id: String(it.id), h: it.h, t: it.t })));
-    const ids = pending.map((it) => String(it.id));
-    const schema = {
-      type: 'object',
-      properties: Object.fromEntries(ids.map((id) => [id, { type: 'string' }])),
-      required: ids,
-      additionalProperties: false,
+    const ask = (list) => {
+      const ids = list.map((it) => String(it.id));
+      const schema = {
+        type: 'object',
+        properties: Object.fromEntries(ids.map((id) => [id, { type: 'string' }])),
+        required: ids,
+        additionalProperties: false,
+      };
+      const payload = JSON.stringify(list.map((it) => ({ id: String(it.id), h: it.h, t: it.t })));
+      return callLLM(aitApiSettings(s), system, payload, 8192, { schema, pageLang: src || msg.page?.lang });
     };
     let text;
     try {
-      const call = () => callLLM(aitApiSettings(s), system, payload, 8192, { schema, pageLang: src || msg.page?.lang });
+      const call = () => ask(pending);
       text = hybrid && msg.retry ? await fixInTurn(call) : await call();
     } catch (e) {
       // El aviso de abajo puede tapar el error del respaldo: queda en la consola.
@@ -573,20 +628,27 @@ async function handleTranslate(msg) {
       }
       throw e;
     }
-    let obj = parseJSON(text);
-    if (obj && typeof obj.translations === 'object') obj = obj.translations;
-    const map = {};
-    if (Array.isArray(obj)) {
-      obj.forEach((o) => { if (o && o.id != null) map[String(o.id)] = o.t ?? o.text ?? o.translation; });
-    } else if (obj && typeof obj === 'object') {
-      Object.assign(map, obj);
+    const map = resultMap(text);
+    // Aun así a veces devuelve un texto sin traducir: lo que vuelve igual y está en otro idioma se pide aparte, una
+    // vez. Si esa consulta falla, no se guarda en caché.
+    let echoed = [];
+    if (!msg.retry && target) {
+      const same = pending.filter((it) => map[String(it.id)] === it.t);
+      const langs = same.length ? await detectEach(same) : [];
+      echoed = same.filter((it, i) => langs[i] && langs[i] !== target);
+    }
+    if (echoed.length) {
+      try {
+        Object.assign(map, resultMap(await ask(echoed)));
+        echoed = [];
+      } catch (e) { console.warn('[Traductor IA]', e.message); }
     }
     const toCache = {};
     for (const it of pending) {
       const v = map[String(it.id)];
       if (typeof v === 'string') {
         results[it.id] = v;
-        if (s.useCache) toCache[cacheKey(s, it.t, src)] = v;
+        if (s.useCache && !echoed.includes(it)) toCache[cacheKey(s, it.t, src)] = v;
       }
     }
     await cacheStore(toCache);

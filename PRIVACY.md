@@ -57,7 +57,7 @@ Everything below stays in your browser's local extension storage and is never se
 
 - **Settings**: the service you chose, target language, preferences, your glossary, and the lists of sites to always or never translate.
 - **API key**: stored only in this browser and sent only to the service it belongs to, to authenticate your requests. If you turn on "Forget API keys when closing the browser", it is kept only in memory and deleted when the browser closes.
-- **Saved translations** (if "Remember translations" is on): translated text, so a page you revisit is translated instantly. You can delete them anytime in Settings → Advanced → "Delete saved translations". They are also cleared automatically after 40,000 entries.
+- **Saved translations** (if "Remember translations" is on): translated text, so a page you revisit is translated instantly. You can delete them anytime in Settings → Advanced → "Delete saved translations". Each one is deleted automatically after 7 days, and all of them after 40,000 entries.
 - **Recent translations** (only if you turn on "Keep recent translations", off by default): the last 20 texts you translated with the selection card, plus the ones you pin, with their translation, so you can find them again in the toolbar popup. You can delete one or all of them there; turning the option off deletes them all.
 - **Page summaries**: kept only until you close the browser.
 

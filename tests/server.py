@@ -3,6 +3,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 LOG = []
 import os
 RATE = [os.environ.get('RATE')=='1']
+ECHOED = [False]
 TAG = re.compile(r'(<\/?g\d+>|<x\d+\/>)')
 def fake(t):
     # "traduce": texto fuera de etiquetas -> MAYÚSCULAS con prefijo, deja etiquetas
@@ -62,7 +63,10 @@ class H(BaseHTTPRequestHandler):
                 self.send_response(429); self.cors(); self.end_headers(); self.wfile.write(b); return
             items = json.loads(user)
             LOG.append({'type':'translate','items':items})
-            content = '```json\n' + json.dumps({it['id']: fake(it['t']) for it in items}, ensure_ascii=False) + '\n```'
+            # La IA devuelve el lote entero sin traducir (Gemini con YouTube en español), solo la primera vez.
+            echo = not ECHOED[0] and any('ECHO_BATCH' in it['t'] for it in items)
+            if echo: ECHOED[0] = True
+            content = '```json\n' + json.dumps({it['id']: it['t'] if echo else fake(it['t']) for it in items}, ensure_ascii=False) + '\n```'
         out = json.dumps({"choices":[{"message":{"content":content},"finish_reason":"stop"}]}).encode()
         self.send_response(200); self.cors(); self.send_header('content-type','application/json'); self.end_headers(); self.wfile.write(out)
 ThreadingHTTPServer(('127.0.0.1', 8765), H).serve_forever()

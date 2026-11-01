@@ -18,7 +18,7 @@ or stored, update both.
 
 **unlimitedStorage**
 > The local translation cache can exceed the default 10 MB quota on long or frequently visited pages. It is
-> capped at 40,000 entries and can be cleared from Settings.
+> capped at 40,000 entries, each entry expires after 7 days, and it can be cleared from Settings.
 
 **scripting**
 > Injects the translation script into tabs that were already open before the extension was installed, when

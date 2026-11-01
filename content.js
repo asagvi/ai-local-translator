@@ -155,9 +155,23 @@
     if (!LETTER_RE.test(text)) return true; // iconos, separadores, números sueltos
     // Código escrito en un span o un enlace (<code>, README.md, getElementById): el Traductor lo traduciría.
     if (!el.firstElementChild && text.length <= 60 && looksLikeCode(text)) return true;
+    if (tag === 'a' && namesItsLink(el, text)) return true;
     // Fragmento monoespaciado dentro de prosa normal: casi siempre es código.
     if (!hostMono && hasDirectText(el) && isMono(el)) return true;
     return false;
+  }
+
+  // Enlace cuyo texto es un tramo de su dirección (/gituser-98/React-movies, "@gituser-98"): nombre de repo, de usuario o
+  // slug. shortcut: pide un guion, punto, guion bajo o dígito; un nombre de una palabra ("react") se sigue traduciendo.
+  function namesItsLink(a, text) {
+    const t = text.trim().replace(/^@/, '');
+    const href = a?.getAttribute('href');
+    if (!href || !t || /\s/.test(t) || !/[-_.\d]/.test(t)) return false;
+    try {
+      return new URL(href, document.baseURI).pathname.split('/').some((p) => {
+        try { return decodeURIComponent(p) === t; } catch { return p === t; }
+      });
+    } catch { return false; }
   }
 
   function hasBlockDesc(el) {
@@ -211,6 +225,12 @@
   /* Recolección de segmentos                                         */
   /* ---------------------------------------------------------------- */
 
+  // Texto con white-space: pre-wrap (comentarios de YouTube): sus saltos de línea se ven.
+  function keepsBreaks(n) {
+    if (!n.nodeValue.includes('\n') || !n.parentElement) return false;
+    try { return getComputedStyle(n.parentElement).whiteSpaceCollapse !== 'collapse'; } catch { return false; }
+  }
+
   function buildItems(nodes, ctx) {
     const items = [];
     let s = '';
@@ -219,7 +239,9 @@
       if (n.nodeType === 3) {
         items.push({ k: 't', node: n });
         ctx.texts.push(n);
-        s += ctx.clip ? ctx.clip(n) : n.nodeValue;
+        const v = ctx.clip ? ctx.clip(n) : n.nodeValue;
+        // Cada salto viaja como un átomo sin nodo ({nl}): spacesOutside() lo aplastaría y el Traductor lo pierde.
+        s += keepsBreaks(n) ? v.replace(/\s*\n\s*/g, (nl) => ` <x${ctx.atoms.push({ nl }) - 1}/> `) : v;
       } else if (n.nodeType === 1) {
         if (n.id === BADGE_ID) continue;
         if (isAtom(n, ctx.hostMono)) {
@@ -276,6 +298,7 @@
     const plain = src.replace(TAG_RE, ' ').trim();
     if (!LETTER_RE.test(plain)) return;
     if (!ctx.groups.length && looksLikeCode(plain)) return;
+    if (!ctx.groups.length && namesItsLink(host.closest('a'), plain)) return;
     // Varias líneas monoespaciadas sin estructura: muy probablemente código.
     if (hostMono && looksLikeCode(plain)) return;
 
@@ -355,6 +378,8 @@
         if (!v || exp[attr] === v) continue;
         const t = v.trim().replace(/\s+/g, ' ');
         if (!LETTER_RE.test(t) || looksLikeCode(t) || t.length > 500) continue;
+        // El title o el alt de un enlace con nombre de repo o de usuario (el avatar, title="React-movies") tampoco.
+        if (namesItsLink(el.closest('a') || el.querySelector('a'), t)) continue;
         exp[attr] = v;
         attrKnown.set(el, exp);
         out.push({ kind: 'attr', el, host: el, attr, orig: v, src: t, hint: 'ui', state: 'new', attempts: 0 });
@@ -667,10 +692,10 @@
     return root;
   }
 
-  // La IA a veces envuelve la frase en la etiqueta del hint (<p>…</p>): se quita si el original no la tenía.
+  // La IA a veces envuelve la frase en la etiqueta del hint (<p>…</p>, <h1 id="…">…</h1>): se quita si el original no la tenía.
   function stripWrapperTag(translation, src) {
-    const m = /^\s*<([a-z][a-z0-9]*)>([\s\S]*)<\/\1>\s*$/i.exec(translation);
-    if (!m || /^[gx]\d+$/i.test(m[1]) || src.toLowerCase().includes(`<${m[1].toLowerCase()}>`)) return translation;
+    const m = /^\s*<([a-z][a-z0-9]*)(?:\s[^<>]*)?>([\s\S]*)<\/\1>\s*$/i.exec(translation);
+    if (!m || /^[gx]\d+$/i.test(m[1]) || new RegExp(`<${m[1]}[\\s>]`, 'i').test(src)) return translation;
     return m[2];
   }
 
@@ -683,13 +708,40 @@
       const parsed = parseTagged(translation, seg.ctx.groups.length, seg.ctx.atoms.length);
       if (!parsed) return false;
       seg.translation = translation;
-      seg.parsed = parsed;
+      seg.parsed = restoreBreaks(parsed, seg.ctx.atoms);
     }
     pageMemo.set(seg.src, translation);
     seg.state = 'done';
     if (mode === 'translated') applySeg(seg);
     updateBadge();
     return true;
+  }
+
+  // Los átomos {nl} vuelven a ser el salto original dentro del texto, así el árbol tiene la forma de seg.items.
+  function restoreBreaks(node, atoms) {
+    const out = [];
+    let afterBreak = false;
+    for (let c of node.children) {
+      const nl = typeof c !== 'string' && c.x !== undefined ? atoms[c.x].nl : undefined;
+      const prev = out.length - 1;
+      if (nl !== undefined) {
+        if (typeof out[prev] === 'string') out[prev] = out[prev].replace(/ +$/, '') + nl;
+        else out.push(nl);
+        afterBreak = true;
+        continue;
+      }
+      if (typeof c === 'string') {
+        if (afterBreak) c = c.replace(/^ +/, '');
+        if (typeof out[prev] === 'string') out[prev] += c;
+        else out.push(c);
+      } else {
+        if (c.g !== undefined) restoreBreaks(c, atoms);
+        out.push(c);
+      }
+      afterBreak = false;
+    }
+    node.children = out;
+    return node;
   }
 
   function elemSeqItems(items) {
@@ -1502,7 +1554,7 @@
       const ctx = { texts: [], atoms: [], groups: [], hostMono, only, clip };
       const src = spacesOutside(buildItems(run, ctx).s).trim();
       const plain = src.replace(TAG_RE, ' ').trim();
-      if (!plain && !ctx.atoms.length) return;
+      if (!plain && !ctx.atoms.some((a) => !a.nl)) return;
       // Lo mismo que makeSegment() no manda a traducir (números, una URL, una línea de código) se muestra tal cual.
       const keep = !LETTER_RE.test(plain) || ((!ctx.groups.length || hostMono) && looksLikeCode(plain));
       blocks.push({ src, atoms: ctx.atoms, groups: ctx.groups.length, hint: hintFor(host, hostMono), keep });
@@ -1551,8 +1603,9 @@
       parent.append(str.slice(last, m.index));
       last = TAG_RE.lastIndex;
       const atom = m[3] !== undefined ? atoms[+m[3]] : null;
-      const text = atom?.textContent.trim();
-      if (text) {
+      const text = atom?.textContent?.trim();
+      if (atom?.nl) parent.append(atom.nl);
+      else if (text) {
         const c = document.createElement('code');
         c.textContent = text;
         parent.append(c);

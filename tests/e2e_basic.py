@@ -17,7 +17,7 @@ try:
     page.on('pageerror', lambda e: errs.append(str(e)))
     page.goto('http://127.0.0.1:8765/')
     time.sleep(1)
-    def html(): return page.evaluate("""() => { const o={}; for (const id of ['h1','p1','p2','p3','pre1','gh','mono1','p4','li1','p5','p6','d1','r1']) { const e=document.getElementById(id); o[id]= e? e.innerHTML : null }; o.in1=document.getElementById('in1').placeholder; o.img1=document.getElementById('img1').alt; o.nav=document.querySelector('nav').innerHTML; return o }""")
+    def html(): return page.evaluate("""() => { const o={}; for (const id of ['h1','p1','p2','p3','pre1','gh','mono1','p4','li1','p5','p6','p9','p10','p11','p12','crumbs','d1','r1']) { const e=document.getElementById(id); o[id]= e? e.innerHTML : null }; o.in1=document.getElementById('in1').placeholder; o.img1=document.getElementById('img1').alt; o.nav=document.querySelector('nav').innerHTML; return o }""")
     before = html()
     sw.evaluate("""(async()=>{const [t]=await chrome.tabs.query({}).then(ts=>ts.filter(t=>(t.url||'').startsWith('http://127')));await chrome.tabs.sendMessage(t.id,{type:'toggle'})})()""")
     time.sleep(4)
@@ -30,7 +30,7 @@ try:
     sw.evaluate("""(async()=>{const [t]=await chrome.tabs.query({}).then(ts=>ts.filter(t=>(t.url||'').startsWith('http://127')));await chrome.tabs.sendMessage(t.id,{type:'toggle'})})()""")
     time.sleep(0.5)
     orig = html()
-    diffs = [k for k in before if before[k]!=orig[k] and k not in ('d1','r1')]
+    diffs = [k for k in before if before[k]!=orig[k] and k not in ('d1','r1','crumbs','p12')]
     print('\nRESTAURADO IGUAL AL ORIGINAL:', not diffs, diffs)
     for k in diffs: print(k, '\n  ', before[k], '\n  ', orig[k])
     sw.evaluate("""(async()=>{const [t]=await chrome.tabs.query({}).then(ts=>ts.filter(t=>(t.url||'').startsWith('http://127')));await chrome.tabs.sendMessage(t.id,{type:'toggle'})})()""")
@@ -47,6 +47,11 @@ try:
     fails = [m for ok, m in [
         (after['p1'].startswith('ES:') and '<code>' in after['p1'], 'p1 sin traducir o sin el código'),
         (after['pre1'] == before['pre1'], 'pre1 cambió'),
+        (after['p11'].startswith('ES:'), 'p11 (la IA lo devolvió igual) sin pedirlo de nuevo'),
+        (not any('calles' in i['t'] for l in log if l['type']=='translate' for i in l['items']), 'p10 (ya en español) se envió a la IA'),
+        (after['p9'].endswith('</span>\n\nME: WALKING ALONE AGAIN, AS USUAL'), 'p9 (white-space: pre-wrap) perdió los saltos de línea'),
+        ('>gituser-98<' in after['crumbs'] and '>React-movies<' in after['crumbs'] and '>ISSUES<' in after['crumbs'] and 'title="React-movies"' in after['crumbs'] and 'alt="@gituser-98" aria-label="gituser-98"' in after['crumbs'], 'crumbs: nombres de repo y usuario traducidos (o Issues sin traducir)'),
+        (after['p12'].startswith('ES:') and '>React-movies</a>' in after['p12'], 'p12: nombre del repo traducido dentro de la frase'),
         (after['p3'] == before['p3'], 'p3 (etiquetas rotas) no quedó en el original'),
         (after['d1'] and after['d1'].startswith('ES:'), 'contenido dinámico sin traducir'),
         (not diffs, 'el original no quedó idéntico'),

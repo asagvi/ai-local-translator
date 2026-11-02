@@ -1,6 +1,6 @@
 const $ = (id) => document.getElementById(id);
-const FIELDS = ['baseUrl', 'apiKey', 'model', 'targetLang', 'style', 'glossary', 'skipSelectors', 'maxChars', 'concurrency'];
-const CHECKS = ['contextFirst', 'showBadge', 'bilingual', 'selectionButton', 'keepRecent', 'useCache', 'uiEnglish', 'sessionKeys'];
+const FIELDS = ['baseUrl', 'apiKey', 'model', 'targetLang', 'style', 'glossary', 'skipSelectors', 'maxChars', 'concurrency', 'hoverKey'];
+const CHECKS = ['contextFirst', 'showBadge', 'bilingual', 'articleOnly', 'selectionButton', 'keepRecent', 'useCache', 'uiEnglish', 'sessionKeys'];
 const MAIN = ['chrome', 'hybrid', 'gemini'];
 const OTHER_LANG = '__otro';
 
@@ -332,6 +332,8 @@ function readForm() {
     contextFirst: $('contextFirst').checked,
     showBadge: $('showBadge').checked,
     bilingual: $('bilingual').checked,
+    articleOnly: $('articleOnly').checked,
+    hoverKey: ['Control', 'Alt', 'Shift', ''].includes($('hoverKey').value) ? $('hoverKey').value : 'Control',
     selectionButton: $('selectionButton').checked,
     keepRecent: $('keepRecent').checked,
     useCache: $('useCache').checked,

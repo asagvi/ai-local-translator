@@ -179,6 +179,7 @@
     if (v !== undefined) return v;
     v = false;
     for (const c of el.children) {
+      if (c.shadowRoot) { v = true; break; }
       if (isAtom(c, true)) {
         if (!isInlineEl(c)) { v = true; break; }
         continue;
@@ -325,12 +326,20 @@
     out.push(seg);
   }
 
+  // Un shadow root abierto (MSN, componentes web) se recorre como un bloque más, con sus atributos, y se vigila. Los
+  // cerrados no se pueden leer.
   function collect(el, out) {
-    if (el.nodeType !== 1) return;
-    if (el !== document.body && el !== document.documentElement && skipSubtree(el)) return;
+    const shadow = el.nodeType === 11;
+    if (el.nodeType !== 1 && !shadow) return;
+    if (!shadow && el !== document.body && el !== document.documentElement && skipSubtree(el)) return;
+    if (shadow) {
+      watchShadow(el);
+      collectAttrs(el, out);
+    } else if (el.shadowRoot) collect(el.shadowRoot, out);
+    const host = shadow ? el.host : el;
     let run = [];
     const flush = () => {
-      if (run.length) makeSegment(el, run, out);
+      if (run.length) makeSegment(host, run, out);
       run = [];
     };
     for (const child of Array.from(el.childNodes)) {
@@ -348,7 +357,7 @@
         else flush();
         continue;
       }
-      if (tag !== 'button' && isInlineEl(child) && !hasBlockDesc(child)) {
+      if (tag !== 'button' && !child.shadowRoot && isInlineEl(child) && !hasBlockDesc(child)) {
         run.push(child);
       } else {
         flush();
@@ -358,9 +367,13 @@
     flush();
   }
 
+  // El padre, también saliendo de un shadow root a su host.
+  const parentAcross = (n) => n.parentElement || n.parentNode?.host || null;
+  const inside = (root, el) => { for (let a = el; a; a = parentAcross(a)) if (a === root) return true; return false; };
+
   function inSkipped(el) {
     if (isProtected(el)) return true;
-    for (let a = el.parentElement; a && a !== document.body; a = a.parentElement) {
+    for (let a = parentAcross(el); a && a !== document.body; a = parentAcross(a)) {
       if (skipSubtree(a)) return true;
     }
     return false;
@@ -1023,14 +1036,62 @@
     }
     pendingRoots = new Set();
     const list = [...hosts].filter((h) => ![...hosts].some((o) => o !== h && o.contains(h)));
+    const root = rootForScan();
     for (const h of list) {
       if (h !== document.body && inSkipped(h)) continue;
+      if (root !== document.body && !inside(root, h)) continue;
       scan(h);
     }
   }
 
+  const MO_OPTS = { childList: true, subtree: true, characterData: true };
+  let observing = false;
+  let shadowRoots = new Set();
+  let sweepTimers = [];
+
   function startObserving() {
-    mo.observe(document.body, { childList: true, subtree: true, characterData: true });
+    observing = true;
+    mo.observe(document.body, MO_OPTS);
+    for (const r of shadowRoots) if (r.host.isConnected) mo.observe(r, MO_OPTS);
+    // Un componente que se define después adjunta su shadow root sin cambiar el DOM de la página: no hay mutación que
+    // avise. shortcut: dos barridos fijos y uno al hacer scroll; si no alcanza, escuchar customElements desde el mundo de
+    // la página.
+    sweepTimers.forEach(clearTimeout);
+    sweepTimers = [2000, 6000].map((ms) => setTimeout(sweepShadows, ms));
+  }
+
+  // Los componentes que se arman al llegar a la vista (lazy) aparecen al hacer scroll: un barrido cada 3 s como mucho.
+  let lastSweep = 0;
+  addEventListener('scroll', () => {
+    if (!observing || Date.now() - lastSweep < 3000) return;
+    lastSweep = Date.now();
+    setTimeout(sweepShadows, 300);
+  }, { passive: true, capture: true });
+
+  function stopObserving() {
+    observing = false;
+    mo.disconnect();
+    sweepTimers.forEach(clearTimeout);
+    sweepTimers = [];
+  }
+
+  function watchShadow(root) {
+    if (shadowRoots.has(root)) return;
+    shadowRoots.add(root);
+    if (observing) mo.observe(root, MO_OPTS);
+  }
+
+  function sweepShadows() {
+    if (mode !== 'translated' || !observing) return;
+    const walk = (root) => {
+      for (const el of root.querySelectorAll('*')) {
+        if (!el.shadowRoot) continue;
+        if (shadowRoots.has(el.shadowRoot)) walk(el.shadowRoot);
+        else pendingRoots.add(el);
+      }
+    };
+    walk(document);
+    if (pendingRoots.size && !rescanTimer) rescanTimer = setTimeout(processRescan, 0);
   }
 
   /* ---------------------------------------------------------------- */
@@ -1055,10 +1116,23 @@
     userSkip = sels.join(',');
   }
 
-  function translatePage() {
-    if (!document.body) return;
-    if (mode === 'translated') return;
-    if (mode === 'original') { showTranslated(); return; }
+  // "Solo el artículo": el article con más texto; si no hay, main. Sin ninguno con texto suficiente, la página entera.
+  let pageRoot = null;
+  function findPageRoot() {
+    if (!settings.articleOnly) return document.body;
+    const len = (el) => (el.innerText || '').length;
+    const best = [...document.querySelectorAll('article')].reduce((a, b) => (!a || len(b) > len(a) ? b : a), null);
+    if (best && len(best) >= 500) return best;
+    const main = document.querySelector('main, [role=main]');
+    return main && len(main) >= 200 ? main : document.body;
+  }
+  function rootForScan() {
+    if (!pageRoot?.isConnected) pageRoot = findPageRoot();
+    return pageRoot;
+  }
+
+  // Lo que hace falta antes del primer escaneo, de la página o de un párrafo.
+  function begin() {
     mode = 'translated';
     fatalError = '';
     lastSoftError = '';
@@ -1066,7 +1140,17 @@
     resetCaches();
     try { bodyMono = MONO_RE.test((getComputedStyle(document.body).fontFamily || '').split(',')[0]); } catch { bodyMono = false; }
     ensureBadge();
-    scan(document.body);
+  }
+
+  function translatePage() {
+    if (!document.body) return;
+    if (mode === 'translated' && !partial) return;
+    if (mode === 'original') { showTranslated(); return; }
+    if (mode === 'translated') resetCaches();
+    else begin();
+    partial = false;
+    pageRoot = findPageRoot();
+    scan(pageRoot);
     starting = hostSegs.size > 0;
     ensureProfile();
     startObserving();
@@ -1074,11 +1158,28 @@
     updateBadge();
   }
 
+  // Un solo bloque (párrafo bajo el cursor): mismo motor, sin vigilar el resto de la página. Con la página ya en el
+  // original, no hace nada: "Ver traducción" la traduce entera.
+  let partial = false;
+  function translateBlock(block) {
+    if (mode === 'original') return;
+    if (mode === 'off') {
+      begin();
+      partial = true;
+    } else resetCaches();
+    if (!scan(block).length) return;
+    ensureProfile();
+    notifyState();
+    updateBadge();
+  }
+
   function showOriginal() {
     if (mode !== 'translated') return;
     mode = 'original';
-    mo.disconnect();
+    stopObserving();
     for (let i = segments.length - 1; i >= 0; i--) undoSeg(segments[i]);
+    // Solo eran párrafos sueltos: se vuelve a empezar de cero, así otro toque sigue funcionando y "Traducir" es la página.
+    if (partial) { stopAll(); return; }
     notifyState();
     updateBadge();
   }
@@ -1086,9 +1187,10 @@
   function showTranslated() {
     if (mode !== 'original') return;
     mode = 'translated';
+    partial = false;
     for (const seg of segments) if (seg.translation && !seg.stale) applySeg(seg);
     resetCaches();
-    scan(document.body);
+    scan(rootForScan());
     startObserving();
     scheduleFlush();
     notifyState();
@@ -1097,7 +1199,8 @@
 
   function stopAll() {
     if (mode === 'translated') showOriginal();
-    mo.disconnect();
+    stopObserving();
+    shadowRoots = new Set();
     io.disconnect();
     hostSegs.clear();
     segments = [];
@@ -1108,6 +1211,8 @@
     segOf = new WeakMap();
     attrKnown = new WeakMap();
     mode = 'off';
+    partial = false;
+    pageRoot = null;
     profile = null;
     profilePromise = null;
     profileKey = '';
@@ -1264,6 +1369,7 @@
   let selSeq = 0;
   // Lo que esperaba un idioma del Traductor: se vuelve a traducir cuando la ventana de descarga avisa.
   let selDownload = null;
+  let selBlocks = null; // lo traducido en la tarjeta, para comparar con el otro servicio
 
   function ensureSel() {
     if (selEls) return selEls;
@@ -1307,6 +1413,10 @@
         .tarjeta__traduccion--espera { font-size: 15px; font-weight: 400; color: #a0a8bc; }
         .tarjeta__traduccion--error { font-size: 14px; font-weight: 400; color: #ff8a80; }
         .tarjeta__significados { margin: 6px 0 0; font-size: 14px; color: #c9cfdd; }
+        .tarjeta__servicio { margin: 12px 0 0; font-size: 12px; font-weight: 600; color: #a0a8bc; }
+        .tarjeta__servicio + .tarjeta__traduccion { margin-top: 2px; }
+        .tarjeta__servicio[hidden], .tarjeta__comparacion[hidden] { display: none; }
+        .tarjeta__comparacion { margin-top: 14px; padding-top: 2px; border-top: 1px dashed #39425c; }
         .tarjeta__acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 8px 12px; border-top: 1px solid #2e3650; }
         .tarjeta__acciones[hidden] { display: none; }
         .tarjeta__accion { all: unset; flex: none; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; padding: 6px 10px; border-radius: 8px;
@@ -1348,16 +1458,22 @@
               <button class="tarjeta__accion tarjeta__ir" type="submit"></button>
             </span>
           </form>
+          <p class="tarjeta__servicio tarjeta__servicio-principal" hidden></p>
           <div class="tarjeta__traduccion" aria-live="polite"></div>
           <p class="tarjeta__tipo" hidden></p>
           <p class="tarjeta__significados" hidden></p>
           <button class="tarjeta__accion tarjeta__ir tarjeta__bajar" type="button" hidden></button>
+          <div class="tarjeta__comparacion" hidden>
+            <p class="tarjeta__servicio tarjeta__servicio-otro"></p>
+            <div class="tarjeta__traduccion tarjeta__otra" aria-live="polite"></div>
+          </div>
         </div>
         <div class="tarjeta__acciones" hidden>
           <button class="tarjeta__accion tarjeta__ir tarjeta__cambiar" type="button" hidden></button>
           <button class="tarjeta__accion tarjeta__copiar" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h8"/></svg><span></span></button>
           <button class="tarjeta__accion tarjeta__oir" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg><span></span></button>
           <button class="tarjeta__accion tarjeta__edita" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/></svg><span></span></button>
+          <button class="tarjeta__accion tarjeta__comparar" type="button" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg><span></span></button>
           <span class="tarjeta__aviso" role="status"></span>
         </div>
       </div>`;
@@ -1370,6 +1486,8 @@
       editar: q('.tarjeta__editar'), texto: q('.tarjeta__texto'), ir: q('.tarjeta__editar .tarjeta__ir'), edita: q('.tarjeta__edita'),
       anular: q('.tarjeta__anular'),
       bajar: q('.tarjeta__bajar'), cambiar: q('.tarjeta__cambiar'),
+      comparar: q('.tarjeta__comparar'), comparacion: q('.tarjeta__comparacion'), otra: q('.tarjeta__otra'),
+      principal: q('.tarjeta__servicio-principal'), servicio: q('.tarjeta__servicio-otro'),
     };
     const e = selEls;
     e.boton.setAttribute('aria-label', aitT('menuSelection'));
@@ -1391,6 +1509,7 @@
     e.copiar.lastChild.textContent = aitT('selCopy');
     e.oir.lastChild.textContent = aitT('selListen');
     e.edita.lastChild.textContent = aitT('selEdit');
+    e.comparar.addEventListener('click', compareSelection);
     e.ir.textContent = aitT('translate');
     e.anular.textContent = aitT('selEditCancel');
     e.bajar.textContent = aitT('download');
@@ -1663,6 +1782,10 @@
     e.acciones.hidden = true;
     e.cambiar.hidden = !pick.field;
     e.bajar.hidden = true;
+    e.comparar.hidden = true;
+    e.comparacion.hidden = true;
+    e.principal.hidden = true;
+    selBlocks = null;
     selDownload = null;
     e.aviso.textContent = '';
     e.traduccion.className = 'tarjeta__traduccion tarjeta__traduccion--espera';
@@ -1740,9 +1863,60 @@
     e.significados.textContent = (lookup?.meanings || []).join(', ');
     e.significados.hidden = !lookup?.meanings?.length;
     e.oir.hidden = !canSpeak();
+    // Comparar: solo texto (no la consulta de una palabra) y con otro servicio disponible.
+    selBlocks = lookup ? null : blocks;
+    const other = AIT_PROVIDERS[settings.compare];
+    if (other && selBlocks?.some((b) => b.src && !b.keep)) {
+      e.comparar.lastChild.textContent = aitT('selCompare', other.label);
+      e.comparar.hidden = false;
+    }
     e.acciones.hidden = false;
     if (blocks.some((b) => b.tr !== undefined)) {
       chrome.runtime.sendMessage({ type: 'remember', original: pick.text, translation: e.traduccion.innerText, lang: selTarget() }).catch(() => {});
+    }
+    placeNear(e.tarjeta, pick.rect);
+  }
+
+  // La misma selección con el otro servicio, debajo y con el nombre de cada uno.
+  async function compareSelection() {
+    const e = selEls;
+    const seq = selSeq;
+    const pick = selLast;
+    const blocks = selBlocks;
+    const id = settings.compare;
+    if (!blocks || !AIT_PROVIDERS[id]) return;
+    const todo = blocks.filter((b) => b.src && !b.keep);
+    e.comparar.hidden = true;
+    e.principal.textContent = AIT_PROVIDERS[settings.provider]?.label || '';
+    e.principal.hidden = false;
+    e.servicio.textContent = AIT_PROVIDERS[id].label;
+    e.comparacion.hidden = false;
+    e.otra.className = 'tarjeta__traduccion tarjeta__otra tarjeta__traduccion--espera';
+    e.otra.textContent = aitT('selTranslating');
+    e.tarjeta.focus({ preventScroll: true });
+    try {
+      const res = await chrome.runtime.sendMessage({
+        type: 'translate',
+        items: todo.map((b, i) => ({ id: i, h: b.hint, t: b.src })),
+        page: { url: location.href.split('#')[0], title: document.title, lang: document.documentElement.lang || '' },
+        targetLang: selTarget(),
+        sourceLang: selSrc,
+        compare: id,
+      });
+      if (!res?.ok) throw new Error(res?.error || aitT('errNoReply'));
+      if (seq !== selSeq) return;
+      const out = new Map(todo.map((b, i) => [b, typeof res.results[i] === 'string' ? stripWrapperTag(res.results[i], b.src) : undefined]));
+      e.otra.className = 'tarjeta__traduccion tarjeta__otra';
+      e.otra.replaceChildren(...blocks.map((b) => {
+        const el = document.createElement(b.code ? 'pre' : 'p');
+        if (b.code) el.textContent = b.code;
+        else renderTagged(el, out.get(b) ?? b.src, b.atoms);
+        return el;
+      }));
+    } catch (err) {
+      if (seq !== selSeq) return;
+      e.otra.className = 'tarjeta__traduccion tarjeta__otra tarjeta__traduccion--error';
+      e.otra.textContent = err?.message || String(err);
     }
     placeNear(e.tarjeta, pick.rect);
   }
@@ -1767,6 +1941,42 @@
     }, 0);
   });
   document.addEventListener('selectionchange', () => { if (selEls && getSelection().isCollapsed) hideSelButton(); });
+
+  /* ---------------------------------------------------------------- */
+  /* Párrafo bajo el cursor                                           */
+  /* ---------------------------------------------------------------- */
+
+  // Un toque de la tecla elegida (sola: Ctrl+C o Ctrl+clic no cuentan) traduce el bloque que está bajo el mouse.
+  let hoverEl = null;
+  let tapKey = '';
+  document.addEventListener('mousemove', (ev) => { hoverEl = ev.composedPath()[0]; }, { passive: true, capture: true });
+  addEventListener('keydown', (ev) => {
+    tapKey = !ev.repeat && settings?.hoverKey && ev.key === settings.hoverKey ? ev.key : '';
+  }, true);
+  addEventListener('mousedown', () => { tapKey = ''; }, true);
+  addEventListener('keyup', (ev) => {
+    const tapped = tapKey && ev.key === tapKey;
+    tapKey = '';
+    if (!tapped || inFrame || !hoverEl?.isConnected) return;
+    // Escribiendo en un campo, la tecla es del campo.
+    let f = document.activeElement;
+    while (f?.shadowRoot?.activeElement) f = f.shadowRoot.activeElement;
+    if (f?.isContentEditable || f?.matches?.('input, textarea, select')) return;
+    const block = blockAt(hoverEl);
+    if (block) init().then(() => translateBlock(block));
+  }, true);
+
+  // El primer ancestro que es bloque, con letras y no demasiado grande (el margen de la página no es un párrafo).
+  function blockAt(el) {
+    for (let a = el.nodeType === 1 ? el : parentAcross(el); a && a !== document.body && a !== document.documentElement; a = parentAcross(a)) {
+      if (a === selHost || a.id === BADGE_ID) return null;
+      if (isInlineEl(a)) continue;
+      const len = (a.textContent || '').length;
+      if (!LETTER_RE.test(a.textContent || '') || len > 5000) return null;
+      return inSkipped(a) ? null : a;
+    }
+    return null;
+  }
   addEventListener('scroll', hideSelButton, { passive: true, capture: true });
 
   /* ---------------------------------------------------------------- */
@@ -1827,7 +2037,15 @@
 
   function settingsChanged(next) {
     const bilingual = settings?.bilingual;
+    const articleOnly = settings?.articleOnly;
     settings = { ...AIT_DEFAULTS, ...next };
+    // Otro alcance: se vuelve al original y se traduce de nuevo (con la caché prendida, lo ya traducido no se vuelve a pedir).
+    if (mode !== 'off' && Boolean(articleOnly) !== Boolean(settings.articleOnly)) {
+      const was = mode;
+      stopAll();
+      if (was === 'translated') translatePage();
+      return;
+    }
     // Bilingüe prendido o apagado desde el popup: lo ya traducido se vuelve a aplicar del otro modo, sin pedir nada.
     if (mode === 'translated' && Boolean(bilingual) !== Boolean(settings.bilingual)) {
       for (let i = segments.length - 1; i >= 0; i--) undoSeg(segments[i]);

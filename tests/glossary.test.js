@@ -37,4 +37,14 @@ m = aitGlossMark('Usa C++ y Node.js', aitGlossary('C++\nnode.js = Node'));
 assert.strictEqual(m.t, 'Usa <x9000/> y <x9001/>');
 assert.deepStrictEqual([...m.subs], ['C++', 'Node']);
 
+// Por sitio: "@dominio regla" vale solo ahí y en sus subdominios; sin host, solo las reglas de todos los sitios.
+const site = '@github.com issue\n@github.com  deploy = desplegar\ndeploy = despliegue\n@ = roto\n@example.com';
+assert.deepStrictEqual(JSON.parse(JSON.stringify(aitGlossary(site, 'github.com'))), [
+  { from: 'issue', to: null }, { from: 'deploy', to: 'desplegar' }]);
+assert.deepStrictEqual(JSON.parse(JSON.stringify(aitGlossary(site, 'gist.github.com'))).map((r) => r.from), ['issue', 'deploy']);
+assert.deepStrictEqual(JSON.parse(JSON.stringify(aitGlossary(site, 'notgithub.com'))), [{ from: 'deploy', to: 'despliegue' }]);
+assert.deepStrictEqual(JSON.parse(JSON.stringify(aitGlossary(site))), [{ from: 'deploy', to: 'despliegue' }]);
+// La regla del sitio gana a la general: con el mismo término, la primera que aparece.
+assert.strictEqual(aitGlossMark('Deploy now', aitGlossary(site, 'github.com')).subs[0], 'Desplegar');
+
 console.log('glossary: ok');

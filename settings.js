@@ -191,13 +191,28 @@ function aitLangCode(name) {
 }
 
 // Glosario propio, una regla por línea: "X = Y" traduce X siempre como Y; "X" sola (o "X =") no la traduce.
-function aitGlossary(text) {
-  return String(text || '').split('\n').map((line) => {
+// Con "@dominio " delante, la regla vale solo en ese sitio y sus subdominios, y con el mismo término reemplaza a la
+// general (la IA no recibe dos instrucciones opuestas). Sin host (no se sabe la página), solo las generales.
+function aitGlossary(text, host = '') {
+  const site = [];
+  const all = [];
+  for (let line of String(text || '').split('\n')) {
+    let list = all;
+    line = line.trim();
+    if (line.startsWith('@')) {
+      const sp = line.search(/\s/);
+      const dom = sp < 0 ? '' : line.slice(1, sp).toLowerCase();
+      if (!dom || !host || !aitHostMatches([dom], host)) continue;
+      line = line.slice(sp + 1);
+      list = site;
+    }
     const i = line.indexOf('=');
     const from = (i < 0 ? line : line.slice(0, i)).trim();
     const to = i < 0 ? '' : line.slice(i + 1).trim();
-    return { from, to: to || null };
-  }).filter((r) => r.from);
+    if (from) list.push({ from, to: to || null });
+  }
+  const own = new Set(site.map((r) => r.from.toLowerCase()));
+  return [...site, ...all.filter((r) => !own.has(r.from.toLowerCase()))];
 }
 
 // Para el Traductor de Chrome, que no recibe instrucciones: cada término viaja como un átomo <x9000/>, <x9001/>… y
@@ -268,6 +283,8 @@ const AIT_DEFAULTS = {
   showBadge: true,
   selectionButton: true,
   bilingual: false,
+  articleOnly: false,
+  hoverKey: 'Control',
   keepRecent: false,
   useCache: true,
   uiEnglish: false,
@@ -425,6 +442,36 @@ function aitAddRecent(history, entry, max = 20) {
   return [{ ...entry, fav: Boolean(history.find(same)?.fav) }, ...history.filter((h) => !same(h))]
     .filter((h) => h.fav || free++ < max)
     .slice(0, 120);
+}
+
+// Día de la cuota de Gemini: Google la reinicia a medianoche hora del Pacífico.
+function aitPacificDay(ms) {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles', year: 'numeric', month: '2-digit', day: '2-digit' }).format(ms);
+}
+
+function aitLocalStamp(ms) {
+  const d = new Date(ms);
+  const p = (n) => String(n).padStart(2, '0');
+  return Number.isNaN(d.getTime()) ? '' : `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+// CSV para Excel o Sheets (con BOM para que Excel lea UTF-8). El texto sale de páginas ajenas: una celda que empieza con
+// = + - @ va con ' delante para que no se ejecute como fórmula.
+function aitRecentCsv(list) {
+  const cell = (v) => {
+    let s = String(v ?? '');
+    if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
+    return /[",\r\n']/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const rows = [['Original', 'Translation', 'Language', 'Date', 'Pinned'],
+    ...list.map((h) => [h.o, h.t, h.lang, aitLocalStamp(h.at), h.fav ? 'yes' : ''])];
+  return `﻿${rows.map((r) => r.map(cell).join(',')).join('\r\n')}\r\n`;
+}
+
+// Archivo de texto para "Importar" de Anki: frente = original, dorso = traducción. Tabuladores y saltos, a espacios.
+function aitRecentAnki(list) {
+  const flat = (v) => String(v ?? '').replace(/\s+/g, ' ').trim();
+  return `#separator:tab\n#html:false\n#columns:Front\tBack\n${list.map((h) => `${flat(h.o)}\t${flat(h.t)}\n`).join('')}`;
 }
 
 // Caché de traducciones: cada entrada es {t, at} y vale 7 días. Lo guardado sin fecha (el texto solo) ya no sirve.

@@ -7,19 +7,22 @@
   <style>
   @layer pagina {
     body { width: 340px; background: var(--superficie); }
-    .popup__cabecera { display: flex; align-items: center; gap: 10px; padding: 12px 12px 12px 14px; }
-    .popup__cabecera h1 { font-size: 1.05rem; margin-right: auto; }
+    .popup__cabecera { display: flex; align-items: center; gap: 10px; padding: 10px 10px 10px 14px; }
+    .popup__cabecera h1 { min-width: 0; margin-right: auto; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .popup__ajustes { all: unset; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 8px; color: var(--suave); cursor: pointer; }
     .popup__ajustes:hover { background: var(--papel); color: var(--tinta); }
     .popup__ajustes:focus-visible { outline: 2px solid var(--foco); }
-    .popup__cuerpo { padding: 4px 14px 16px; display: grid; gap: 14px; }
+    .popup__cuerpo { padding: 2px 14px 12px; display: grid; gap: 12px; }
     .popup__controles { display: grid; gap: 14px; }
     .popup__accion { width: 100%; padding: 12px; font-size: 1rem; }
-    .popup__avance { display: grid; gap: 6px; min-height: 20px; }
+    .popup__avance { display: grid; gap: 6px; }
+    /* Sin estado ni avance, no deja un hueco entre el botón y los interruptores. */
+    .popup__avance:has(#bar[hidden]):has(#status:empty) { display: none; }
     .popup__descarga { display: grid; gap: 8px; justify-items: start; padding: 10px 12px; background: var(--papel); border-radius: 10px; }
     .popup__descarga progress { width: 100%; }
     .popup__contexto { padding: 10px 12px; background: var(--papel); border-radius: 10px; font-size: 0.85rem; display: grid; gap: 4px; }
-    .popup__pie { padding: 10px 14px; border-top: 1px solid var(--linea); background: var(--papel); font-size: 0.82rem; color: var(--suave); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .popup__pie { padding: 8px 14px; border-top: 1px solid var(--linea); background: var(--papel); font-size: 0.82rem; color: var(--suave); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+    .popup__uso { flex-basis: 100%; }
     .popup__enlace { all: unset; color: var(--acento); font-weight: 650; cursor: pointer; }
     .popup__enlace:hover { text-decoration: underline; text-underline-offset: 2px; }
     .popup__enlace:focus-visible { outline: 2px solid var(--foco); }
@@ -34,10 +37,26 @@
     .par__destino option { color: var(--tinta); background: var(--superficie); }
     .par__fuente { min-width: 0; font-weight: 500; }
 
-    /* Últimas traducciones de la tarjeta de la selección */
-    .recientes { display: grid; gap: 8px; padding-top: 12px; border-top: 1px solid var(--linea); }
-    .recientes__cabecera { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-    .recientes__cabecera h2 { font-size: 0.95rem; }
+    /* Interruptores de la página: una línea cada uno; la explicación está en Opciones y para el lector de pantalla. */
+    .popup__opciones { display: grid; padding: 0 12px; background: var(--papel); border-radius: 10px; }
+    .popup__opciones .interruptor { padding: 9px 0; }
+    .popup__opciones .interruptor + .interruptor { border-top: 1px solid var(--linea); }
+    .popup__opciones .interruptor__texto { font-weight: 600; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* Últimas traducciones de la tarjeta de la selección: plegadas, con la cantidad a la vista */
+    .recientes { border-top: 1px solid var(--linea); }
+    .recientes__resumen { display: flex; align-items: center; gap: 8px; padding: 12px 0 4px; cursor: pointer; list-style: none; border-radius: 6px; }
+    .recientes__resumen::-webkit-details-marker { display: none; }
+    .recientes__resumen h2 { font-size: 0.95rem; }
+    .recientes__cuenta { min-width: 20px; padding: 0 6px; border-radius: 10px; background: var(--papel); color: var(--suave); font-size: 0.78rem; font-weight: 700; text-align: center; }
+    .recientes__flecha { margin-left: auto; color: var(--suave); }
+    .recientes[open] .recientes__flecha { transform: rotate(90deg); }
+    .recientes__cuerpo { display: grid; gap: 8px; padding-top: 8px; }
+    .recientes__pie { display: flex; justify-content: space-between; gap: 8px; font-size: 0.82rem; color: var(--suave); }
+    .recientes__pie:not(:has(:not([hidden]))) { display: none; }
+    @media (prefers-reduced-motion: no-preference) {
+      .recientes__flecha { transition: transform 200ms var(--ease-out); }
+    }
     .recientes__lista { display: grid; gap: 6px; max-height: 260px; overflow-y: auto; overscroll-behavior: contain; margin: 0; padding: 0; list-style: none; }
     .reciente { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 8px; padding: 8px 10px; background: var(--papel); border-radius: 10px; }
     .reciente__trad { font-weight: 600; white-space: pre-line; overflow-wrap: anywhere; overflow: hidden;
@@ -55,7 +74,7 @@
 </head>
 <body>
   <header class="popup__cabecera">
-    <img class="marca" src="icons/marca.svg" alt="" width="26" height="26">
+    <img class="marca" src="icons/marca.svg" alt="" width="24" height="24">
     <h1 data-i18n="extName">Translator: Browser, AI &amp; Local</h1>
     <button type="button" class="popup__ajustes" id="opts" aria-label="Settings" title="Settings" data-i18n-attr="aria-label:settings title:settings">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -87,40 +106,52 @@
         <p id="statusSr" class="visualmente-oculto" role="status"></p>
       </div>
 
-      <label class="interruptor">
-        <span class="interruptor__texto" data-i18n="popupAlways">Always translate on <span id="host"></span></span>
-        <input class="interruptor__input" type="checkbox" role="switch" id="always">
-        <span class="ayuda" data-i18n="popupAlwaysHint">Pages on this site are translated automatically when you open them.</span>
-      </label>
-
-      <label class="interruptor">
-        <span class="interruptor__texto" data-i18n="bilingual">Show original and translation</span>
-        <input class="interruptor__input" type="checkbox" role="switch" id="bilingual">
-        <span class="ayuda" data-i18n="bilingualHint">Paragraphs, headings and list items keep the original and show the translation below it. Handy for learning a language.</span>
-      </label>
+      <div class="popup__opciones">
+        <label class="interruptor">
+          <span class="interruptor__texto" data-i18n="popupAlways">Always translate on <span id="host"></span></span>
+          <input class="interruptor__input" type="checkbox" role="switch" id="always">
+          <span class="ayuda visualmente-oculto" data-i18n="popupAlwaysHint">Pages on this site are translated automatically when you open them.</span>
+        </label>
+        <label class="interruptor">
+          <span class="interruptor__texto" data-i18n="bilingual">Show original and translation</span>
+          <input class="interruptor__input" type="checkbox" role="switch" id="bilingual">
+          <span class="ayuda visualmente-oculto" data-i18n="bilingualHint">Paragraphs, headings and list items keep the original and show the translation below it. Handy for learning a language.</span>
+        </label>
+        <label class="interruptor">
+          <span class="interruptor__texto" data-i18n="articleOnly">Only the article</span>
+          <input class="interruptor__input" type="checkbox" role="switch" id="articleOnly">
+          <span class="ayuda visualmente-oculto" data-i18n="articleOnlyHint">Translates the main text of the page and leaves menus, sidebars and footers as they are. Faster, and it uses less of your limit.</span>
+        </label>
+      </div>
 
       <div id="context" class="popup__contexto" hidden></div>
     </div>
 
-    <section class="recientes" aria-labelledby="recentTitle">
-      <div class="recientes__cabecera">
+    <details class="recientes" id="recent">
+      <summary class="recientes__resumen">
         <h2 id="recentTitle" data-i18n="recent">Recent</h2>
-        <button type="button" id="recentClear" class="popup__enlace" data-i18n="recentClear" hidden>Clear all</button>
-      </div>
+        <span id="recentCount" class="recientes__cuenta" hidden></span>
+        <svg class="recientes__flecha" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+      </summary>
+      <div class="recientes__cuerpo">
       <label class="interruptor">
         <span class="interruptor__texto" data-i18n="keepRecent">Keep recent translations</span>
         <input class="interruptor__input" type="checkbox" role="switch" id="keepRecent">
-        <span class="ayuda" data-i18n="keepRecentHint">The last 20 translations of selected text, to see them again in the toolbar popup. Only on this computer; turning it off deletes them.</span>
+        <span class="ayuda visualmente-oculto" data-i18n="keepRecentHint">The last 20 translations of selected text, to see them again in the toolbar popup. Only on this computer; turning it off deletes them.</span>
       </label>
       <input type="search" id="recentSearch" autocomplete="off" placeholder="Search recent…" aria-label="Search recent" data-i18n-attr="placeholder:recentSearch aria-label:recentSearch" hidden>
       <p id="recentEmpty" class="ayuda"></p>
       <ul id="recentList" class="recientes__lista" role="list"></ul>
+      <p class="recientes__pie"><span id="recentExport" hidden><span data-i18n="recentExport">Export:</span> <button type="button" id="exportCsv" class="popup__enlace" aria-label="Export as CSV (Excel, Sheets)" data-i18n-attr="aria-label:exportCsv title:exportCsv" title="Export as CSV (Excel, Sheets)">CSV</button> · <button type="button" id="exportAnki" class="popup__enlace" aria-label="Export for Anki" data-i18n-attr="aria-label:exportAnki title:exportAnki" title="Export for Anki">Anki</button></span>
+        <button type="button" id="recentClear" class="popup__enlace" data-i18n="recentClear" hidden>Clear all</button></p>
       <p id="recentStatus" class="visualmente-oculto" role="status"></p>
-    </section>
+      </div>
+    </details>
   </div>
 
   <footer class="popup__pie">
     <p data-i18n="popupUsing">Using <b id="svc"></b> · <button type="button" class="popup__enlace" id="change" data-i18n="change">Change</button></p>
+    <p id="usage" class="popup__uso" hidden><span id="usageText"></span> · <a class="popup__enlace" href="https://aistudio.google.com/usage" target="_blank" rel="noopener" data-i18n="usageLink">See your quota</a></p>
     <p><kbd>Alt</kbd>+<kbd>T</kbd></p>
     <a class="donar popup__enlace" href="#" target="_blank" rel="noopener" hidden><span aria-hidden="true">☕</span> <span data-i18n="donate">Buy me a coffee</span></a>
   </footer>

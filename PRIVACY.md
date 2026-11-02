@@ -1,6 +1,6 @@
 # Privacy Policy — Translator: Browser, AI & Local
 
-Last updated: October 27, 2026
+Last updated: November 1, 2026
 
 Translator: Browser, AI & Local ("the extension") translates web pages in your browser. This policy explains what
 data the extension handles, where it goes, and what stays on your computer.
@@ -21,6 +21,13 @@ typing (to translate it into the page's language and replace it). Only the selec
 type after "Edit text"), and only after you ask. With a single word
 and a cloud AI service, the sentence around it (up to about 300 characters) goes too, so the AI picks the right
 meaning. The button itself works on your computer: selecting text sends nothing.
+
+In the selection card, **Compare with…** translates the same selected text with a second service (Google Gemini
+when you use Chrome Translator and have a Gemini key; Chrome Translator, on your device, when you use a cloud AI),
+so you can see both. Nothing goes to that second service until you press it.
+
+You can also translate a single paragraph by putting the mouse over it and tapping a key (Ctrl by default; you can
+change it or turn it off in Settings). Only that paragraph is sent, the same way a page would be.
 
 What happens next depends on the translation service you pick in Settings:
 
@@ -59,6 +66,7 @@ Everything below stays in your browser's local extension storage and is never se
 - **API key**: stored only in this browser and sent only to the service it belongs to, to authenticate your requests. If you turn on "Forget API keys when closing the browser", it is kept only in memory and deleted when the browser closes.
 - **Saved translations** (if "Remember translations" is on): translated text, so a page you revisit is translated instantly. You can delete them anytime in Settings → Advanced → "Delete saved translations". Each one is deleted automatically after 7 days, and all of them after 40,000 entries.
 - **Recent translations** (only if you turn on "Keep recent translations", off by default): the last 20 texts you translated with the selection card, plus the ones you pin, with their translation, so you can find them again in the toolbar popup. You can delete one or all of them there; turning the option off deletes them all.
+- **Gemini usage counter** (only with Google Gemini): how many requests and tokens were sent today and when the service last said you hit its limit, shown in the toolbar popup. Only counts, never text.
 - **Page summaries**: kept only until you close the browser.
 
 Uninstalling the extension deletes all of this.

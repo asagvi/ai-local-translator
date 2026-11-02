@@ -1,0 +1,43 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Features test</title>
+<style>body{font-family:sans-serif;padding-bottom:150vh} my-card,late-card,very-late{display:block}</style></head>
+<body>
+<nav id="nav"><a href="#">Home page</a> <a href="#">About us</a></nav>
+<article id="art">
+  <h1 id="ah">The quiet village by the river</h1>
+  <p id="ap1">Every morning the baker opens his shop before sunrise, and the whole street smells of fresh bread long before the first bus arrives. Children stop on their way to school to look at the cakes in the window, and the old men who sit by the fountain argue about the weather as if it were politics.</p>
+  <p id="ap2">In the afternoon the river slows down, the fishermen fold their nets, and the bells of the church ring for no reason anyone can remember. Visitors who come for a day often stay for a week, because nobody here is ever in a hurry to send them away.</p>
+</article>
+<aside id="side"><p id="sp">Related stories you might like to read next</p></aside>
+<section id="hov">
+  <p id="h1p">This paragraph is translated only when you tap the key over it.</p>
+  <p id="h2p">This other paragraph stays in the original language.</p>
+</section>
+<my-card id="card"><span id="slotted">Slotted light text is translated as usual</span></my-card>
+<late-card id="late"></late-card>
+<very-late id="vlate"></very-late>
+<p><label>Notes <input id="field" type="text"></label></p>
+<p id="sel">Select this sentence to compare both services.</p>
+<script>
+customElements.define('my-card', class extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }).innerHTML = '<h2 id="sh">Breaking news from the shadow</h2><p id="sp1">Text inside an open shadow root should be translated too.</p><slot></slot>';
+  }
+});
+// Un componente que se define después de cargar: su shadow root aparece sin que cambie el DOM de la página.
+setTimeout(() => customElements.define('late-card', class extends HTMLElement {
+  connectedCallback() { this.attachShadow({ mode: 'open' }).innerHTML = '<p id="lp">Late component text appears after a while.</p>'; }
+}), 1500);
+// Un componente que se define mucho después (más allá de los barridos fijos): lo encuentra el barrido al hacer scroll.
+window.defineVeryLate = () => customElements.define('very-late', class extends HTMLElement {
+  connectedCallback() { this.attachShadow({ mode: 'open' }).innerHTML = '<p id="vp">Very late component text shows up after scrolling.</p>'; }
+});
+// Texto nuevo dentro de un shadow root ya traducido.
+window.addShadowText = () => {
+  const p = document.createElement('p');
+  p.id = 'sp2';
+  p.textContent = 'New text added inside the shadow root later.';
+  document.getElementById('card').shadowRoot.append(p);
+};
+</script>
+</body></html>

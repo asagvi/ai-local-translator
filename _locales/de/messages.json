@@ -624,10 +624,10 @@
     "message": "Dein Glossar"
   },
   "glossaryPh": {
-    "message": "sale = Angebot\nBlack Friday"
+    "message": "sale = Angebot\nBlack Friday\n@github.com issue"
   },
   "glossaryHint": {
-    "message": "Eine Regel pro Zeile. „X = Y“ übersetzt X immer als Y; nur „X“ lässt es unübersetzt. Ganze Wörter, Groß- oder Kleinschreibung egal. Mit dem Chrome-Übersetzer wird Y unverändert eingesetzt, Artikel und Endungen passen dann eventuell nicht."
+    "message": "Eine Regel pro Zeile. „X = Y“ übersetzt X immer als Y; nur „X“ lässt es unübersetzt. Ganze Wörter, Groß- oder Kleinschreibung egal. Mit dem Chrome-Übersetzer wird Y unverändert eingesetzt, Artikel und Endungen passen dann eventuell nicht. Mit @Domain davor gilt sie nur auf dieser Website."
   },
   "skipLabel": {
     "message": "Teile der Seite, die nicht übersetzt werden sollen"
@@ -787,5 +787,44 @@
   },
   "translateFrom": {
     "message": "Übersetzen aus"
+  },
+  "recentExport": {
+    "message": "Exportieren:"
+  },
+  "exportCsv": {
+    "message": "Als CSV exportieren (Excel, Sheets)"
+  },
+  "exportAnki": {
+    "message": "Für Anki exportieren"
+  },
+  "usageToday": {
+    "message": "Gemini heute: $1 Anfragen · $2 Tokens"
+  },
+  "usageWait": {
+    "message": "Gemini hat sein Limit erreicht: weiter in $1 s"
+  },
+  "usageHit": {
+    "message": "Limit um $1 erreicht"
+  },
+  "usageLink": {
+    "message": "Kontingent ansehen"
+  },
+  "articleOnly": {
+    "message": "Nur der Artikel"
+  },
+  "articleOnlyHint": {
+    "message": "Übersetzt den Haupttext der Seite und lässt Menüs, Seitenleisten und Fußzeilen, wie sie sind. Schneller und verbraucht weniger von deinem Limit."
+  },
+  "hoverKey": {
+    "message": "Absatz unter der Maus übersetzen"
+  },
+  "hoverKeyHint": {
+    "message": "Halte die Maus über einen Absatz und tippe diese Taste allein an, um nur diesen Absatz zu übersetzen."
+  },
+  "hoverOff": {
+    "message": "Aus"
+  },
+  "selCompare": {
+    "message": "Mit $1 vergleichen"
   }
 }

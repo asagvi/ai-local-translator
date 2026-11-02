@@ -624,10 +624,10 @@
     "message": "你的术语表"
   },
   "glossaryPh": {
-    "message": "sale = 促销\nBlack Friday"
+    "message": "sale = 促销\nBlack Friday\n@github.com issue"
   },
   "glossaryHint": {
-    "message": "每行一条规则。“X = Y”表示 X 总是译为 Y；只写“X”则不翻译。按完整单词匹配，不区分大小写。使用 Chrome 翻译时，Y 会原样插入，前后语句可能不够通顺。"
+    "message": "每行一条规则。“X = Y”表示 X 总是译为 Y；只写“X”则不翻译。按完整单词匹配，不区分大小写。使用 Chrome 翻译时，Y 会原样插入，前后语句可能不够通顺。在前面加上 @域名，则只对该网站生效。"
   },
   "skipLabel": {
     "message": "页面中不想翻译的部分"
@@ -787,5 +787,44 @@
   },
   "translateFrom": {
     "message": "翻译自"
+  },
+  "recentExport": {
+    "message": "导出："
+  },
+  "exportCsv": {
+    "message": "导出为 CSV（Excel、表格）"
+  },
+  "exportAnki": {
+    "message": "导出到 Anki"
+  },
+  "usageToday": {
+    "message": "今日 Gemini：$1 次请求 · $2 个 token"
+  },
+  "usageWait": {
+    "message": "Gemini 已达上限：$1 秒后继续"
+  },
+  "usageHit": {
+    "message": "$1 达到上限"
+  },
+  "usageLink": {
+    "message": "查看配额"
+  },
+  "articleOnly": {
+    "message": "仅正文"
+  },
+  "articleOnlyHint": {
+    "message": "只翻译页面正文，菜单、侧栏和页脚保持原样。更快，也更省额度。"
+  },
+  "hoverKey": {
+    "message": "翻译鼠标下的段落"
+  },
+  "hoverKeyHint": {
+    "message": "将鼠标放在段落上，单独按一下此键，即可只翻译该段落。"
+  },
+  "hoverOff": {
+    "message": "关闭"
+  },
+  "selCompare": {
+    "message": "与 $1 比较"
   }
 }

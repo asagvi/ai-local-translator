@@ -12,7 +12,8 @@ or stored, update both.
 
 **storage**
 > Saves the user's settings (translation service, target language, preferences, site lists, API key) and, if
-> enabled, previously translated text so revisited pages translate instantly. Everything stays in local
+> enabled, previously translated text so revisited pages translate instantly, plus a daily count of Gemini
+> requests and tokens shown in the popup. Everything stays in local
 > extension storage; if the user chooses, API keys are kept only in session storage and deleted when the
 > browser closes.
 

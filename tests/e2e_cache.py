@@ -50,6 +50,15 @@ try:
     check('barrido recuenta', r['count'] == r['total'], r)
     check('barrido una vez por día', r['otraVez'], r)
     check('barrido no toca la config', r['settings'], r)
+    # Contador de Gemini: tres escrituras a la vez no pierden cuentas; un 429 anota el freno.
+    u = sw.evaluate("""async () => {
+      await chrome.storage.local.remove('usage');
+      await Promise.all([1, 2, 3].map((n) => noteUsage((u) => { u.requests++; u.tokens += n * 10; })));
+      await noteUsage((u) => { u.limitedAt = Date.now(); u.limitedUntil = Date.now() + 5000; });
+      return (await chrome.storage.local.get('usage')).usage;
+    }""")
+    check('uso: tres a la vez', u['requests'] == 3 and u['tokens'] == 60, u)
+    check('uso: día de Google y freno', u['day'] == sw.evaluate('aitPacificDay(Date.now())') and u['limitedUntil'] > u['limitedAt'] > 0, u)
     ctx.close()
 finally:
   srv.terminate()

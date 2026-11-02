@@ -49,7 +49,7 @@ function translateSystemPrompt(s, profile, page) {
   }
   if (s.style) ctx += `User style preferences: ${s.style}\n`;
   // Con el Traductor de Chrome el glosario ya viaja como átomos (aitGlossMark).
-  const rules = aitProviderType(s) === 'chrome' ? [] : aitGlossary(s.glossary);
+  const rules = aitProviderType(s) === 'chrome' ? [] : s.glossRules || [];
   const glossary = rules.length
     ? `\nUSER GLOSSARY (set by the user; it overrides every rule above):\n${rules.map((r) => (r.to
       ? `- "${r.from}" → always "${r.to}" (inflect it as ${target} grammar requires)`
@@ -237,6 +237,19 @@ async function fetchJSON(url, init, timeoutMs = 120000) {
 
 const noThinking = new Set(); // modelos de Gemini que rechazaron thinkingConfig
 
+// Consumo de Gemini del día de Google, para el popup. Encadenado: con 3 lotes a la vez no se pierde ninguna cuenta.
+let usageChain = Promise.resolve();
+function noteUsage(change) {
+  usageChain = usageChain.then(async () => {
+    const day = aitPacificDay(Date.now());
+    const { usage } = await chrome.storage.local.get('usage');
+    const u = usage?.day === day ? usage : { day, requests: 0, tokens: 0, limitedAt: 0, limitedUntil: 0 };
+    change(u);
+    await chrome.storage.local.set({ usage: u });
+  }).catch((e) => console.warn('[Traductor IA] usage', e));
+  return usageChain;
+}
+
 async function callLLM(s, system, user, maxTokens = 8192, opts = {}) {
   const type = aitProviderType(s);
   // El Traductor de Chrome usa Gemini Nano como respaldo.
@@ -277,6 +290,8 @@ async function callLLM(s, system, user, maxTokens = 8192, opts = {}) {
   try {
     data = await post();
   } catch (e) {
+    const wait = type === 'gemini' && /^RATE_LIMIT:(\d+)/.exec(e.message)?.[1];
+    if (wait) noteUsage((u) => { u.limitedAt = Date.now(); u.limitedUntil = Number(wait) > 0 ? Date.now() + Number(wait) * 1000 : 0; });
     // Un modelo puede no aceptar ese nivel de thinking (Gemini) o el campo de razonamiento (Ollama): se repite sin él.
     if (body.generationConfig?.thinkingConfig && /thinking/i.test(e.message)) delete body.generationConfig.thinkingConfig;
     else if (body.reasoning_effort && /think|reason/i.test(e.message)) delete body.reasoning_effort;
@@ -290,6 +305,7 @@ async function callLLM(s, system, user, maxTokens = 8192, opts = {}) {
     text = (data.content || []).filter((b) => b.type === 'text').map((b) => b.text).join('');
     if (data.stop_reason === 'max_tokens') throw new Error('TRUNCATED');
   } else if (type === 'gemini') {
+    noteUsage((u) => { u.requests++; u.tokens += Number(data.usageMetadata?.totalTokenCount) || 0; });
     const c = data.candidates?.[0];
     text = (c?.content?.parts || []).map((p) => p.text || '').join('');
     if (c?.finishReason === 'MAX_TOKENS') throw new Error('TRUNCATED');
@@ -343,9 +359,9 @@ function modelId(s) {
 }
 
 // Con el idioma de origen elegido a mano, otra clave: lo guardado con el idioma detectado puede estar mal. Lo mismo con
-// el glosario en el prompt de la IA; con el Traductor de Chrome no hace falta: se guarda con los marcadores.
+// el glosario de ese sitio en el prompt de la IA; con el Traductor de Chrome no hace falta: se guarda con los marcadores.
 function cacheKey(s, text, src = '') {
-  const gloss = aitProviderType(s) !== 'chrome' && s.glossary?.trim() ? `${s.glossary.trim()}\u0001` : '';
+  const gloss = aitProviderType(s) !== 'chrome' && s.glossRules?.length ? `${JSON.stringify(s.glossRules)}\u0001` : '';
   return 'c:' + hash(`${s.targetLang}\u0001${modelId(s)}\u0001${src ? `${src}\u0001` : ''}${gloss}${text}`);
 }
 
@@ -529,13 +545,27 @@ async function detectEach(list) {
   }));
 }
 
+function hostOf(url) {
+  try { return new URL(url).hostname; } catch { return ''; }
+}
+
+// Comparar en la tarjeta: lo mismo con el otro servicio, solo el que ofrece compareService().
+function withService(s, id) {
+  if (!id || id !== compareService(s)) return s;
+  return id === 'chrome' ? { ...s, provider: 'chrome' } : { ...s, provider: 'gemini', ...aitServiceFields(s.services || {}, 'gemini') };
+}
+
 async function handleTranslate(msg) {
-  const s = withTarget(await aitGetSettings(), msg.targetLang);
+  const stored = await aitGetSettings();
+  if (msg.compare && msg.compare !== compareService(stored)) throw new Error('Servicio no disponible para comparar');
+  const s = withService(withTarget(stored, msg.targetLang), msg.compare);
+  // El glosario de este sitio: las reglas generales más las de "@dominio".
+  s.glossRules = aitGlossary(s.glossary, hostOf(msg.page?.url));
   // Idioma de origen elegido a mano en el popup o la tarjeta (solo de la lista); si no, se detecta.
   const src = AIT_LANGUAGES.includes(msg.sourceLang) ? aitLangCode(msg.sourceLang) : '';
   const type = aitProviderType(s);
   // El Traductor de Chrome no recibe instrucciones: los términos del glosario viajan como átomos y vuelven al final.
-  const gloss = type === 'chrome' ? aitGlossary(s.glossary) : [];
+  const gloss = type === 'chrome' ? s.glossRules : [];
   const subs = {};
   const items = (msg.items || []).map((it) => {
     const m = aitGlossMark(it.t, gloss);
@@ -761,17 +791,31 @@ chrome.commands.onCommand.addListener(async (command) => {
   else if (command === 'translate-selection' && tab?.id != null) chrome.tabs.sendMessage(tab.id, { type: 'selection', text: '' }).catch(() => {});
 });
 
+// Con qué otro servicio se puede comparar en la tarjeta: el Traductor de Chrome con Gemini (si tiene key), una IA con
+// el Traductor. Solo el id: la key no sale del service worker.
+function compareService(s) {
+  if (aitProviderType(s) === 'chrome') return aitServiceFields(s.services || {}, 'gemini').apiKey ? 'gemini' : '';
+  return translatorPresent ? 'chrome' : '';
+}
+
+// Si el navegador trae el Traductor (Edge, Opera y Chromium no): se pregunta una vez por arranque, al primer pedido.
+let translatorPresent = true;
+let translatorCheck = null;
+const checkTranslator = (s) => (translatorCheck ??= translatorAvailability(s).then((a) => { translatorPresent = a !== 'missing'; }));
+
 // Lo que necesita el content script, sin keys ni direcciones: corre en el proceso de cada página.
 function contentSettings(s) {
-  const fields = ['provider', 'contextFirst', 'maxChars', 'concurrency', 'skipSelectors', 'showBadge', 'targetLang', 'alwaysSites', 'neverSites', 'uiEnglish', 'selectionButton', 'bilingual'];
-  return Object.fromEntries(fields.map((f) => [f, s[f]]));
+  const fields = ['provider', 'contextFirst', 'maxChars', 'concurrency', 'skipSelectors', 'showBadge', 'targetLang', 'alwaysSites', 'neverSites', 'uiEnglish', 'selectionButton', 'bilingual', 'articleOnly', 'hoverKey'];
+  return { ...Object.fromEntries(fields.map((f) => [f, s[f]])), compare: compareService(s) };
 }
 
 // El content script ya no ve storage.onChanged: se le avisa desde acá.
 chrome.storage.onChanged.addListener(async (changes, area) => {
   // Con sessionKeys, cambiar solo la key no toca settings: igual hay que reintentar las pestañas con error.
   if (!(area === 'local' && changes.settings) && !(area === 'session' && changes.keys)) return;
-  const settings = contentSettings(await aitGetSettings());
+  const stored = await aitGetSettings();
+  await checkTranslator(stored);
+  const settings = contentSettings(stored);
   for (const tab of await chrome.tabs.query({ url: ['http://*/*', 'https://*/*', 'file:///*'] })) {
     chrome.tabs.sendMessage(tab.id, { type: 'settings', settings }).catch(() => { /* sin content script */ });
   }
@@ -835,7 +879,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     }
     switch (msg?.type) {
       case 'uiStrings': return aitEnMessages();
-      case 'contentSettings': return contentSettings(await aitGetSettings());
+      case 'contentSettings': {
+        const s = await aitGetSettings();
+        await checkTranslator(s);
+        return contentSettings(s);
+      }
       case 'translate': return handleTranslate(msg);
       case 'profile': return handleProfile(msg);
       case 'lookup': return handleLookup(msg);

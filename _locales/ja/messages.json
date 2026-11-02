@@ -624,10 +624,10 @@
     "message": "用語集"
   },
   "glossaryPh": {
-    "message": "sale = セール\nBlack Friday"
+    "message": "sale = セール\nBlack Friday\n@github.com issue"
   },
   "glossaryHint": {
-    "message": "1 行に 1 ルール。「X = Y」は X を常に Y と訳し、「X」だけなら翻訳しません。単語単位で、大文字・小文字は区別しません。Chrome の翻訳機能では Y がそのまま入るため、前後の文とかみ合わないことがあります。"
+    "message": "1 行に 1 ルール。「X = Y」は X を常に Y と訳し、「X」だけなら翻訳しません。単語単位で、大文字・小文字は区別しません。Chrome の翻訳機能では Y がそのまま入るため、前後の文とかみ合わないことがあります。先頭に @ドメイン を付けると、そのサイトだけに適用されます。"
   },
   "skipLabel": {
     "message": "翻訳しないページ内の部分"
@@ -787,5 +787,44 @@
   },
   "translateFrom": {
     "message": "翻訳元"
+  },
+  "recentExport": {
+    "message": "書き出し:"
+  },
+  "exportCsv": {
+    "message": "CSV で書き出す (Excel、スプレッドシート)"
+  },
+  "exportAnki": {
+    "message": "Anki 用に書き出す"
+  },
+  "usageToday": {
+    "message": "今日の Gemini: $1 回 · $2 トークン"
+  },
+  "usageWait": {
+    "message": "Gemini が上限に達しました: $1 秒後に再開"
+  },
+  "usageHit": {
+    "message": "$1 に上限に到達"
+  },
+  "usageLink": {
+    "message": "割り当てを見る"
+  },
+  "articleOnly": {
+    "message": "本文だけ"
+  },
+  "articleOnlyHint": {
+    "message": "ページの本文だけを翻訳し、メニュー、サイドバー、フッターはそのままにします。速く、上限の消費も少なくなります。"
+  },
+  "hoverKey": {
+    "message": "マウスの下の段落を翻訳"
+  },
+  "hoverKeyHint": {
+    "message": "段落の上にマウスを置き、このキーだけを押すと、その段落だけを翻訳します。"
+  },
+  "hoverOff": {
+    "message": "オフ"
+  },
+  "selCompare": {
+    "message": "$1 と比較"
   }
 }

@@ -624,10 +624,10 @@
     "message": "Seu glossário"
   },
   "glossaryPh": {
-    "message": "sale = promoção\nBlack Friday"
+    "message": "sale = promoção\nBlack Friday\n@github.com issue"
   },
   "glossaryHint": {
-    "message": "Uma regra por linha. \"X = Y\" traduz X sempre como Y; só \"X\" deixa sem traduzir. Palavras inteiras, com ou sem maiúsculas. Com o Tradutor do Chrome, Y entra exatamente como escrito, e a concordância pode ficar estranha."
+    "message": "Uma regra por linha. \"X = Y\" traduz X sempre como Y; só \"X\" deixa sem traduzir. Palavras inteiras, com ou sem maiúsculas. Com o Tradutor do Chrome, Y entra exatamente como escrito, e a concordância pode ficar estranha. Com @domínio na frente, vale só nesse site."
   },
   "skipLabel": {
     "message": "Partes da página que você não quer traduzir"
@@ -787,5 +787,44 @@
   },
   "translateFrom": {
     "message": "Traduzir de"
+  },
+  "recentExport": {
+    "message": "Exportar:"
+  },
+  "exportCsv": {
+    "message": "Exportar como CSV (Excel, Sheets)"
+  },
+  "exportAnki": {
+    "message": "Exportar para o Anki"
+  },
+  "usageToday": {
+    "message": "Gemini hoje: $1 consultas · $2 tokens"
+  },
+  "usageWait": {
+    "message": "O Gemini atingiu o limite: continua em $1 s"
+  },
+  "usageHit": {
+    "message": "atingiu o limite às $1"
+  },
+  "usageLink": {
+    "message": "Ver sua cota"
+  },
+  "articleOnly": {
+    "message": "Só o artigo"
+  },
+  "articleOnlyHint": {
+    "message": "Traduz o texto principal da página e deixa como estão os menus, as barras laterais e o rodapé. É mais rápido e gasta menos do seu limite."
+  },
+  "hoverKey": {
+    "message": "Traduzir o parágrafo sob o mouse"
+  },
+  "hoverKeyHint": {
+    "message": "Coloque o mouse sobre um parágrafo e toque nesta tecla, sozinha, para traduzir só esse parágrafo."
+  },
+  "hoverOff": {
+    "message": "Desativado"
+  },
+  "selCompare": {
+    "message": "Comparar com $1"
   }
 }

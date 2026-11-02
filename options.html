@@ -350,6 +350,21 @@ Environment="OLLAMA_ORIGINS=chrome-extension://…"</code></pre>
           <span class="ayuda" data-i18n="bilingualHint">Paragraphs, headings and list items keep the original and show the translation below it. Handy for learning a language.</span>
         </label>
         <label class="interruptor">
+          <span class="interruptor__texto" data-i18n="articleOnly">Only the article</span>
+          <input class="interruptor__input" type="checkbox" role="switch" id="articleOnly">
+          <span class="ayuda" data-i18n="articleOnlyHint">Translates the main text of the page and leaves menus, sidebars and footers as they are. Faster, and it uses less of your limit.</span>
+        </label>
+        <div class="campo">
+          <label class="campo__etiqueta" for="hoverKey" data-i18n="hoverKey">Translate the paragraph under the mouse</label>
+          <select id="hoverKey" aria-describedby="hoverKeyHint">
+            <option value="Control">Ctrl</option>
+            <option value="Alt">Alt</option>
+            <option value="Shift">Shift</option>
+            <option value="" data-i18n="hoverOff">Off</option>
+          </select>
+          <p class="ayuda" id="hoverKeyHint" data-i18n="hoverKeyHint">Put the mouse over a paragraph and tap this key, on its own, to translate just that paragraph.</p>
+        </div>
+        <label class="interruptor">
           <span class="interruptor__texto" data-i18n="selectionButton">Show a button when you select text</span>
           <input class="interruptor__input" type="checkbox" role="switch" id="selectionButton">
           <span class="ayuda" data-i18n="selectionButtonHint">Click it to see the translation of what you selected. You can also use “Translate selection” in the right-click menu.</span>
@@ -404,8 +419,9 @@ Environment="OLLAMA_ORIGINS=chrome-extension://…"</code></pre>
       <div class="campo">
         <label class="campo__etiqueta" for="glossary" data-i18n="glossaryLabel">Your glossary</label>
         <textarea id="glossary" aria-describedby="glossaryHint" data-i18n-attr="placeholder:glossaryPh" placeholder="boutique = shop
-Black Friday"></textarea>
-        <p class="ayuda" id="glossaryHint" data-i18n="glossaryHint">One rule per line. "X = Y" always translates X as Y; just "X" keeps it untranslated. Whole words, upper or lower case. With Chrome Translator, Y goes in exactly as written, so the words around it may not agree with it.</p>
+Black Friday
+@github.com issue"></textarea>
+        <p class="ayuda" id="glossaryHint" data-i18n="glossaryHint">One rule per line. "X = Y" always translates X as Y; just "X" keeps it untranslated. Whole words, upper or lower case. With Chrome Translator, Y goes in exactly as written, so the words around it may not agree with it. With @domain in front, it applies only to that site.</p>
       </div>
       <div class="campo">
         <label class="campo__etiqueta" for="skipSelectors" data-i18n="skipLabel">Parts of the page you don't want translated</label>

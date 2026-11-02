@@ -51,6 +51,7 @@ function setStatus(text, kind = '', announce = true) {
   $('host').textContent = host || aitT('thisPage');
   $('always').checked = aitHostMatches(settings.alwaysSites, host);
   $('bilingual').checked = Boolean(settings.bilingual);
+  $('articleOnly').checked = Boolean(settings.articleOnly);
 
   const langs = [...new Set([settings.targetLang, ...AIT_LANGUAGES])];
   $('lang').replaceChildren(...langs.map((l) => new Option(aitLangLabel(l), l)));
@@ -241,8 +242,25 @@ function setStatus(text, kind = '', announce = true) {
     $('recentList').hidden = !on;
     $('recentEmpty').hidden = !on || shown.length > 0;
     $('recentEmpty').textContent = aitT(has ? 'recentNoMatch' : 'recentEmpty');
+    $('recentExport').hidden = !on || !shown.length;
+    $('recentCount').textContent = on && recent.length ? String(recent.length) : '';
+    $('recentCount').hidden = !(on && recent.length);
   }
+  // Se exporta lo que se ve: con el buscador, solo lo que coincide.
+  function download(ext, text, type) {
+    const url = URL.createObjectURL(new Blob([text], { type }));
+    const a = Object.assign(document.createElement('a'), { href: url, download: `translator-recent-${aitLocalStamp(Date.now()).slice(0, 10)}.${ext}` });
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+  $('exportCsv').addEventListener('click', () => download('csv', aitRecentCsv(shown), 'text/csv;charset=utf-8'));
+  $('exportAnki').addEventListener('click', () => download('txt', aitRecentAnki(shown), 'text/plain;charset=utf-8'));
   $('recentSearch').addEventListener('input', renderRecent);
+  // Abierto o cerrado como lo dejó el usuario (solo comodidad: sin storage, empieza cerrado).
+  try { $('recent').open = localStorage.getItem('ait-recent-open') === '1'; } catch { /* sin storage */ }
+  $('recent').addEventListener('toggle', () => {
+    try { localStorage.setItem('ait-recent-open', $('recent').open ? '1' : '0'); } catch { /* sin storage */ }
+  });
   // Apagado, el background borra la lista.
   $('keepRecent').addEventListener('change', async () => {
     settings = await aitSaveSettings({ keepRecent: $('keepRecent').checked });
@@ -284,6 +302,11 @@ function setStatus(text, kind = '', announce = true) {
     settings = await aitSaveSettings({ bilingual: $('bilingual').checked });
   });
 
+  // Con la página traducida, el content script la vuelve a traducir con el nuevo alcance.
+  $('articleOnly').addEventListener('change', async () => {
+    settings = await aitSaveSettings({ articleOnly: $('articleOnly').checked });
+  });
+
   $('always').addEventListener('change', async () => {
     const list = new Set(settings.alwaysSites || []);
     if ($('always').checked) list.add(host);
@@ -295,8 +318,23 @@ function setStatus(text, kind = '', announce = true) {
     }
   });
 
+  // Consumo de Gemini de hoy (lo cuenta el background): Google no avisa cuánto queda hasta que responde 429.
+  async function renderUsage() {
+    if (aitApiId(settings) !== 'gemini') return;
+    const { usage } = await chrome.storage.local.get('usage');
+    const today = usage?.day === aitPacificDay(Date.now()) ? usage : null;
+    const wait = Math.ceil(((today?.limitedUntil || 0) - Date.now()) / 1000);
+    let text = aitT('usageToday', today?.requests || 0, today?.tokens || 0);
+    if (wait > 0) text += ` · ${aitT('usageWait', wait)}`;
+    else if (today?.limitedAt) text += ` · ${aitT('usageHit', aitLocalStamp(today.limitedAt).slice(11))}`;
+    $('usageText').textContent = text;
+    $('usage').hidden = false;
+  }
+  renderUsage();
+
   setInterval(async () => {
     state = await send('status');
     render(state);
+    renderUsage();
   }, 800);
 })();
